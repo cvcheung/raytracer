@@ -9,19 +9,19 @@ import (
 type Sphere struct {
 	center Vec3
 	radius float64
+	mat    Material
 }
 
 // NewSphere constructs a new sphere object with the specified parameters.
-func NewSphere(center Vec3, radius float64) *Sphere {
-	return &Sphere{center, radius}
+func NewSphere(center Vec3, radius float64, mat Material) *Sphere {
+	return &Sphere{center, radius, mat}
 }
 
 // RandomInUnitSphere returns a point in the unit sphere
 func RandomInUnitSphere() Vec3 {
-	rgen := rand.New(rand.NewSource(7))
 	v2 := NewVec3(1, 1, 1)
 	for {
-		p := NewVec3(rgen.Float64(), rgen.Float64(), rgen.Float64()).
+		p := NewVec3(rand.Float64(), rand.Float64(), rand.Float64()).
 			MultiplyScalar(2.0).Subtract(v2)
 		if p.SquaredMagnitude() < 1.0 {
 			return p
@@ -43,12 +43,14 @@ func (s *Sphere) Hit(r *Ray, tMin, tMax float64, rec *HitRecord) bool {
 			rec.t = t
 			rec.p = r.PointAt(t)
 			rec.normal = rec.Point().Subtract(s.center).DivideScalar(s.radius)
+			rec.mat = s.mat
 			return true
 		}
 		if t := (-b + math.Sqrt(discriminant)) / (2 * a); t > tMin && t < tMax {
 			rec.t = t
 			rec.p = r.PointAt(t)
 			rec.normal = rec.Point().Subtract(s.center).DivideScalar(s.radius)
+			rec.mat = s.mat
 			return true
 		}
 	}

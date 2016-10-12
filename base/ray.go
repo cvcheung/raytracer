@@ -10,6 +10,12 @@ func NewRay(origin, direction Vec3) *Ray {
 	return &Ray{origin, direction}
 }
 
+// Update modifies the ray with new parameters
+func (r *Ray) Update(origin, direction Vec3) {
+	r.origin = origin
+	r.direction = direction
+}
+
 // Origin returns the starting point of the ray represented as a Vec3.
 func (r *Ray) Origin() Vec3 {
 	return r.origin

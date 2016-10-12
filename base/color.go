@@ -11,6 +11,7 @@ var (
 	Red   = Color{1.0, 0, 0}
 	White = Color{1.0, 1.0, 1.0}
 	Blue  = Color{0.5, 0.7, 1.0}
+	Black = Color{0.0, 0.0, 0.0}
 )
 
 // NewColor returns a color object with the specified values.

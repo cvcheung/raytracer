@@ -11,14 +11,16 @@ import (
 // MaxFloat64 ...
 const MaxFloat64 = 1.797693134862315708145274237317043567981e+308
 
-func shade(r *base.Ray, obj base.Object) base.Color {
+func shade(r *base.Ray, obj base.Object, depth int) base.Color {
 	var rec base.HitRecord
 	if obj.Hit(r, 0.001, MaxFloat64, &rec) {
-		target := rec.Point().Add(rec.Normal()).Add(base.RandomInUnitSphere())
-		return shade(
-			base.NewRay(rec.Point(),
-				target.Subtract(rec.Point())), obj).
-			MultiplyScalar(0.5)
+		if depth < 50 {
+			m := rec.Material()
+			if bounce, scattered := m.Scatter(r, &rec); bounce {
+				return m.Color().Multiply(shade(scattered, obj, depth+1))
+			}
+		}
+		return base.Black
 	}
 	unitDirection := r.Direction().Normalize()
 	t := 0.5 * (unitDirection.Y() + 1.0)
@@ -47,23 +49,22 @@ func main() {
 	camera := base.NewCamera(lowerLeftCorner, horizontal, vertical, origin)
 
 	// Objects
-	s1 := base.NewSphere(base.NewVec3(0, 0, -1), 0.5)
-	s2 := base.NewSphere(base.NewVec3(0, -100.5, -1), 100)
-	objects := base.NewObjectList(2, s1, s2)
+	s1 := base.NewSphere(base.NewVec3(0, 0, -1), 0.5, base.NewLambertian(base.NewColor(0.8, 0.3, 0.3)))
+	s2 := base.NewSphere(base.NewVec3(0, -100.5, -1), 100, base.NewLambertian(base.NewColor(0.8, 0.8, 0.0)))
+	s3 := base.NewSphere(base.NewVec3(1, 0, -1), 0.5, base.NewMetal(base.NewColor(0.8, 0.6, 0.2)))
+	s4 := base.NewSphere(base.NewVec3(-1, 0, -1), 0.5, base.NewMetal(base.NewColor(0.8, 0.8, 0.0)))
 
-	// Random number for anti-aliasing. We the set the seed to 7 because that is
-	// what any sane person would do.
-	rgen := rand.New(rand.NewSource(7))
+	objects := base.NewObjectList(4, s1, s2, s3, s4)
 
 	fp.WriteString(fmt.Sprintf("P3\n%d %d\n255\n", nx, ny))
 	for j := ny - 1; j >= 0; j-- {
 		for i := 0; i < nx; i++ {
 			color := base.NewEmptyColor()
 			for k := 0; k < ns; k++ {
-				u := (float64(i) + rgen.Float64()) / float64(nx)
-				v := (float64(j) + rgen.Float64()) / float64(ny)
+				u := (float64(i) + rand.Float64()) / float64(nx)
+				v := (float64(j) + rand.Float64()) / float64(ny)
 				r := camera.GetRay(u, v)
-				color = color.Add(shade(r, objects))
+				color = color.Add(shade(r, objects, 0))
 			}
 			color = color.DivideScalar(float64(ns))
 			// Gamma correction

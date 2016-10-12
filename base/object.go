@@ -42,6 +42,7 @@ func (o *ObjectList) Hit(r *Ray, tMin, tMax float64, rec *HitRecord) bool {
 type HitRecord struct {
 	t         float64
 	p, normal Vec3
+	mat       Material
 }
 
 // T returns the t value that caused the ray to intersect the object.
@@ -59,9 +60,16 @@ func (rec *HitRecord) Normal() Vec3 {
 	return rec.normal
 }
 
+// Material returns the pointer to the material struct that defines the type of
+// material that the ray hit.
+func (rec *HitRecord) Material() Material {
+	return rec.mat
+}
+
 // CopyRecord update the current record with the fields another record.
 func (rec *HitRecord) CopyRecord(rec2 *HitRecord) {
 	rec.t = rec2.t
 	rec.p = rec2.p
 	rec.normal = rec2.normal
+	rec.mat = rec2.mat
 }
