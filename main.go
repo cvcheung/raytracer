@@ -6,8 +6,21 @@ import (
 	"raytracer/base"
 )
 
+// MaxFloat64 ...
+const MaxFloat64 = 1.797693134862315708145274237317043567981e+308
+
+func shade(r *base.Ray, obj base.Object) base.Color {
+	var rec base.HitRecord
+	if obj.Hit(r, 0, MaxFloat64, &rec) {
+		return base.NewColor(rec.Normal().X()+1, rec.Normal().Y()+1, rec.Normal().Z()+1).MultiplyScalar(0.5)
+	}
+	unitDirection := r.Direction().Normalize()
+	t := 0.5 * (unitDirection.Y() + 1.0)
+	return base.White.MultiplyScalar(1.0 - t).Add(base.Blue.MultiplyScalar(t))
+}
+
 func main() {
-	fp, err := os.Create("./part2-sphere")
+	fp, err := os.Create("./part3")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -26,7 +39,9 @@ func main() {
 	origin := base.NewVec3(0.0, 0.0, 0.0)
 
 	// Objects
-	sphere := base.NewSphere(base.NewVec3(0, 0, -1), 0.5)
+	s1 := base.NewSphere(base.NewVec3(0, 0, -1), 0.5)
+	s2 := base.NewSphere(base.NewVec3(0, -100.5, -1), 100)
+	objects := base.NewObjectList(2, s1, s2)
 
 	fp.WriteString(fmt.Sprintf("P3\n%d %d\n255\n", nx, ny))
 	for j := ny - 1; j >= 0; j-- {
@@ -35,7 +50,7 @@ func main() {
 			v := float64(j) / float64(ny)
 			r := base.NewRay(origin, lowerLeftCorner.Add(horizontal.MultiplyScalar(u)).Add(vertical.MultiplyScalar(v)))
 
-			color := sphere.Shade(r)
+			color := shade(r, objects)
 			ir := int(255 * color.R)
 			ig := int(255 * color.G)
 			ib := int(255 * color.B)

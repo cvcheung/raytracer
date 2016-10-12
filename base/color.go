@@ -13,6 +13,11 @@ var (
 	Blue  = Color{0.5, 0.7, 1.0}
 )
 
+// NewColor returns a color object with the specified values.
+func NewColor(r, g, b float64) Color {
+	return Color{r, g, b}
+}
+
 // RGBA is taken from the go source code to implement the color.Color interface.
 func (c Color) RGBA() (r, g, b, a uint32) {
 	a = 0xffff

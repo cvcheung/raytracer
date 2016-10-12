@@ -10,6 +10,21 @@ type Vec3 struct {
 	x, y, z float64
 }
 
+// X returns the x-value of the vector.
+func (v Vec3) X() float64 {
+	return v.x
+}
+
+// Y returns the y-value of the vector.
+func (v Vec3) Y() float64 {
+	return v.y
+}
+
+// Z returns the z-value of the vector.
+func (v Vec3) Z() float64 {
+	return v.z
+}
+
 // NewVec3 returns a vector object with the specified coordinates.
 func NewVec3(x, y, z float64) Vec3 {
 	return Vec3{x, y, z}

@@ -9,13 +9,13 @@ type Sphere struct {
 }
 
 // NewSphere constructs a new sphere object with the specified parameters.
-func NewSphere(center Vec3, radius float64) Sphere {
-	return Sphere{center, radius}
+func NewSphere(center Vec3, radius float64) *Sphere {
+	return &Sphere{center, radius}
 }
 
 // Hit returns the value t the ray intersects with a point on the sphere,
 // otherwise returns -1.0.
-func (s Sphere) Hit(r Ray, tMin, tMax float64, rec *HitRecord) bool {
+func (s *Sphere) Hit(r *Ray, tMin, tMax float64, rec *HitRecord) bool {
 	oc := r.Origin().Subtract(s.center)
 	a := r.Direction().Dot(r.Direction())
 	b := 2 * oc.Dot(r.Direction())
@@ -26,13 +26,13 @@ func (s Sphere) Hit(r Ray, tMin, tMax float64, rec *HitRecord) bool {
 		if t := (-b - math.Sqrt(discriminant)) / (2 * a); t > tMin && t < tMax {
 			rec.t = t
 			rec.p = r.PointAt(t)
-			rec.normal = rec.p.Subtract(s.center).DivideScalar(s.radius)
+			rec.normal = rec.Point().Subtract(s.center).DivideScalar(s.radius)
 			return true
 		}
 		if t := (-b + math.Sqrt(discriminant)) / (2 * a); t > tMin && t < tMax {
 			rec.t = t
 			rec.p = r.PointAt(t)
-			rec.normal = rec.p.Subtract(s.center).DivideScalar(s.radius)
+			rec.normal = rec.Point().Subtract(s.center).DivideScalar(s.radius)
 			return true
 		}
 	}
@@ -40,7 +40,7 @@ func (s Sphere) Hit(r Ray, tMin, tMax float64, rec *HitRecord) bool {
 }
 
 // Shade linearly blends white and blue.
-func (s Sphere) Shade(r Ray) Color {
+func (s *Sphere) Shade(r Ray) Color {
 	// if t := s.Hit(r); t > 0 {
 	// 	n := r.PointAt(t).Subtract(NewVec3(0, 0, -1)).Normalize()
 	// 	return Color{n.x + 1, n.y + 1, n.z + 1}.MultiplyScalar(0.5)
