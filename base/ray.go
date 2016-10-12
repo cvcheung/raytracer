@@ -26,10 +26,3 @@ func (r *Ray) Direction() Vec3 {
 func (r *Ray) PointAt(f float64) Vec3 {
 	return r.origin.Add(r.direction.MultiplyScalar(f))
 }
-
-// Shade linearly blends white and blue.
-func (r *Ray) Shade() Color {
-	unitDirection := r.Direction().Normalize()
-	t := 0.5 * (unitDirection.y + 1.0)
-	return White.MultiplyScalar(1.0 - t).Add(Blue.MultiplyScalar(t))
-}

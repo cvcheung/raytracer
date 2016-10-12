@@ -1,6 +1,9 @@
 package base
 
-import "math"
+import (
+	"math"
+	"math/rand"
+)
 
 // Sphere ...
 type Sphere struct {
@@ -11,6 +14,19 @@ type Sphere struct {
 // NewSphere constructs a new sphere object with the specified parameters.
 func NewSphere(center Vec3, radius float64) *Sphere {
 	return &Sphere{center, radius}
+}
+
+// RandomInUnitSphere returns a point in the unit sphere
+func RandomInUnitSphere() Vec3 {
+	rgen := rand.New(rand.NewSource(7))
+	v2 := NewVec3(1, 1, 1)
+	for {
+		p := NewVec3(rgen.Float64(), rgen.Float64(), rgen.Float64()).
+			MultiplyScalar(2.0).Subtract(v2)
+		if p.SquaredMagnitude() < 1.0 {
+			return p
+		}
+	}
 }
 
 // Hit returns the value t the ray intersects with a point on the sphere,
@@ -37,15 +53,4 @@ func (s *Sphere) Hit(r *Ray, tMin, tMax float64, rec *HitRecord) bool {
 		}
 	}
 	return false
-}
-
-// Shade linearly blends white and blue.
-func (s *Sphere) Shade(r Ray) Color {
-	// if t := s.Hit(r); t > 0 {
-	// 	n := r.PointAt(t).Subtract(NewVec3(0, 0, -1)).Normalize()
-	// 	return Color{n.x + 1, n.y + 1, n.z + 1}.MultiplyScalar(0.5)
-	// }
-	unitDirection := r.Direction().Normalize()
-	t := 0.5 * (unitDirection.y + 1.0)
-	return White.MultiplyScalar(1.0 - t).Add(Blue.MultiplyScalar(t))
 }

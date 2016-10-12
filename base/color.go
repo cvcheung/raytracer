@@ -18,6 +18,11 @@ func NewColor(r, g, b float64) Color {
 	return Color{r, g, b}
 }
 
+// NewEmptyColor returns a color object with RGB all initialized to 0.
+func NewEmptyColor() Color {
+	return Color{0, 0, 0}
+}
+
 // RGBA is taken from the go source code to implement the color.Color interface.
 func (c Color) RGBA() (r, g, b, a uint32) {
 	a = 0xffff
@@ -25,20 +30,6 @@ func (c Color) RGBA() (r, g, b, a uint32) {
 	g = uint32(c.G) * a
 	b = uint32(c.B) * a
 	return
-}
-
-func max(v1, v2 uint8) uint8 {
-	if v1 > v2 {
-		return v1
-	}
-	return v2
-}
-
-func min(v1, v2 uint8) uint8 {
-	if v1 < v2 {
-		return v1
-	}
-	return v2
 }
 
 // Add updates the color object with the sum of two colors.
