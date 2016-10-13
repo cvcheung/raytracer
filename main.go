@@ -28,7 +28,7 @@ func shade(r *base.Ray, obj base.Object, depth int) base.Color {
 }
 
 func main() {
-	fp, err := os.Create("./part5-shading-improved")
+	fp, err := os.Create("./output/part9-default.ppm")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -42,19 +42,30 @@ func main() {
 	ns := 500
 
 	// World space
-	lowerLeftCorner := base.NewVec3(-2.0, -1.0, -1.0)
-	horizontal := base.NewVec3(4.0, 0.0, 0.0)
-	vertical := base.NewVec3(0.0, 2.0, 0.0)
-	origin := base.NewVec3(0.0, 0.0, 0.0)
-	camera := base.NewCamera(lowerLeftCorner, horizontal, vertical, origin)
+	// lowerLeftCorner := base.NewVec3(-2.0, -1.0, -1.0)
+	// horizontal := base.NewVec3(4.0, 0.0, 0.0)
+	// vertical := base.NewVec3(0.0, 2.0, 0.0)
+	// origin := base.NewVec3(0.0, 0.0, 0.0)
+	// camera := base.NewCamera(lowerLeftCorner, horizontal, vertical, origin)
+	origin := base.NewVec3(3, 3, 2)
+	lookat := base.NewVec3(0.0, 0.0, -1.0)
+	vertical := base.NewVec3(0.0, 1.0, 0.0)
+	distToFocus := 1.0
+	aperature := 2.0
+	camera := base.NewCameraFOV(origin, lookat, vertical, 20, float64(nx)/float64(ny), aperature, distToFocus)
 
 	// Objects
-	s1 := base.NewSphere(base.NewVec3(0, 0, -1), 0.5, base.NewLambertian(base.NewColor(0.8, 0.3, 0.3)))
+	s1 := base.NewSphere(base.NewVec3(0, 0, -1), 0.5, base.NewLambertian(base.NewColor(0.1, 0.2, 0.5)))
 	s2 := base.NewSphere(base.NewVec3(0, -100.5, -1), 100, base.NewLambertian(base.NewColor(0.8, 0.8, 0.0)))
-	s3 := base.NewSphere(base.NewVec3(1, 0, -1), 0.5, base.NewMetal(base.NewColor(0.8, 0.6, 0.2)))
-	s4 := base.NewSphere(base.NewVec3(-1, 0, -1), 0.5, base.NewMetal(base.NewColor(0.8, 0.8, 0.0)))
+	s3 := base.NewSphere(base.NewVec3(1, 0, -1), 0.5, base.NewMetal(base.NewColor(0.8, 0.6, 0.2), 1.0))
+	s4 := base.NewSphere(base.NewVec3(-1, 0, -1), 0.5, base.NewDielectric(1.5))
+	s5 := base.NewSphere(base.NewVec3(-1, 0, -1), -0.45, base.NewDielectric(1.5))
 
-	objects := base.NewObjectList(4, s1, s2, s3, s4)
+	objects := base.NewObjectList(5, s1, s2, s3, s4, s5)
+	// R := math.Cos(math.Pi / 4)
+	// s1 := base.NewSphere(base.NewVec3(-R, 0, -1), R, base.NewLambertian(base.NewColor(0, 0, 1)))
+	// s2 := base.NewSphere(base.NewVec3(R, 0, -1), R, base.NewLambertian(base.NewColor(1, 0, 0)))
+	// objects := base.NewObjectList(2, s1, s2)
 
 	fp.WriteString(fmt.Sprintf("P3\n%d %d\n255\n", nx, ny))
 	for j := ny - 1; j >= 0; j-- {
