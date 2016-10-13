@@ -3,11 +3,23 @@ package primitives
 // Ray ...
 type Ray struct {
 	origin, direction Vec3
+	time              float64
 }
 
 // NewRay ...
-func NewRay(origin, direction Vec3) *Ray {
-	return &Ray{origin, direction}
+func NewRay(origin, direction Vec3, options ...func(*Ray)) *Ray {
+	r := &Ray{origin: origin, direction: direction}
+	for _, f := range options {
+		f(r)
+	}
+	return r
+}
+
+// WithTime is an optional parameter when generating a new ray.
+func WithTime(time float64) func(*Ray) {
+	return func(r *Ray) {
+		r.time = time
+	}
 }
 
 // Update modifies the ray with new parameters
