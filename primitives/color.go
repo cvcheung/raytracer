@@ -28,7 +28,8 @@ func NewEmptyColor() Color {
 
 // NewRandomColor returns a random color.
 func NewRandomColor() Color {
-	return Color{rand.Float64() * rand.Float64(), rand.Float64() * rand.Float64(), rand.Float64() * rand.Float64()}
+	return Color{rand.Float64() * rand.Float64(), rand.Float64() * rand.Float64(),
+		rand.Float64() * rand.Float64()}
 }
 
 // RGBA is taken from the go source code to implement the color.Color interface.
@@ -63,4 +64,9 @@ func (c Color) MultiplyScalar(f float64) Color {
 // DivideScalar divides f to the all the color channels.
 func (c Color) DivideScalar(f float64) Color {
 	return Color{c.R / f, c.G / f, c.B / f}
+}
+
+// Gradient returns a gradient of blue + white.
+func Gradient(t float64) Color {
+	return White.MultiplyScalar(1.0 - t).Add(Blue.MultiplyScalar(t))
 }

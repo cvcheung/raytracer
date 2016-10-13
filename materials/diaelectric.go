@@ -37,14 +37,16 @@ func (d Dielectric) Scatter(rayIn *primitives.Ray, rec *HitRecord) (bool, *primi
 		niOverNt = 1.0 / d.reflectIdx
 		cosine = -rayIn.Direction().Dot(rec.normal) / rayIn.Direction().Magnitude()
 	}
-	refracted, refVec := rayIn.Direction().Refract(outwardNormal, niOverNt)
+	// refracted, refVec := rayIn.Direction().Refract(outwardNormal, niOverNt)
+	refracted, refVec := utils.Refract(rayIn.Direction(), outwardNormal, niOverNt)
 	if refracted {
 		refractProb = utils.Schlick(cosine, d.reflectIdx)
 	} else {
 		refractProb = 1.0
 	}
 	if rand.Float64() < refractProb {
-		reflected := rayIn.Direction().Reflect(rec.Normal())
+		reflected := utils.Reflect(rayIn.Direction(), rec.Normal())
+		// reflected := rayIn.Direction().Reflect(rec.Normal())
 		return true, primitives.NewRay(rec.Point(), reflected)
 	}
 	return true, primitives.NewRay(rec.Point(), refVec)

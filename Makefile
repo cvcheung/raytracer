@@ -1,2 +1,2 @@
 all:
-	go install raytracer
+	go install ./...

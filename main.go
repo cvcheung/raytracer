@@ -25,9 +25,11 @@ func shade(r *primitives.Ray, obj objects.Object, depth int) primitives.Color {
 		}
 		return primitives.Black
 	}
+
+	// Background color gradient
 	unitDirection := r.Direction().Normalize()
 	t := 0.5 * (unitDirection.Y() + 1.0)
-	return primitives.White.MultiplyScalar(1.0 - t).Add(primitives.Blue.MultiplyScalar(t))
+	return primitives.Gradient(t)
 }
 
 func randomScene() *objects.ObjectList {
@@ -45,9 +47,9 @@ func randomScene() *objects.ObjectList {
 				if rndMat < 0.8 {
 					objList.Add(objects.NewSphere(center, 0.2,
 						materials.NewLambertian(primitives.NewRandomColor())))
-				} else if rndMat < 0.95 {
-					objList.Add(objects.NewSphere(center, 0.2,
-						materials.NewRandomMetal()))
+					// } else if rndMat < 0.95 {
+					// 	objList.Add(objects.NewSphere(center, 0.2,
+					// 		materials.NewRandomMetal()))
 				} else {
 					objList.Add(objects.NewSphere(center, 0.2,
 						materials.NewDielectric(1.5)))
@@ -59,13 +61,13 @@ func randomScene() *objects.ObjectList {
 		materials.NewDielectric(1.5)))
 	objList.Add(objects.NewSphere(primitives.NewVec3(-4, 1, 0), 1,
 		materials.NewLambertian(primitives.NewColor(0.4, 0.2, 0.1))))
-	objList.Add(objects.NewSphere(primitives.NewVec3(4, 1, 0), 1,
-		materials.NewMetal(primitives.NewColor(0.7, 0.6, 0.5), 0)))
+	// objList.Add(objects.NewSphere(primitives.NewVec3(4, 1, 0), 1,
+	// 	materials.NewMetal(primitives.NewColor(0.7, 0.6, 0.5), 0)))
 	return objList
 }
 
 func main() {
-	fp, err := os.Create("./output/refactor.ppm")
+	fp, err := os.Create("./output/refactor-2.ppm")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -76,7 +78,7 @@ func main() {
 	// Pixel counts
 	nx := 1000
 	ny := 500
-	ns := 500
+	ns := 2
 
 	// World space
 	origin := primitives.NewVec3(13, 2, 3)
@@ -84,8 +86,9 @@ func main() {
 	vertical := primitives.NewVec3(0.0, 1.0, 0.0)
 	distToFocus := 10.0
 	aperature := 0.1
-	camera := base.NewCameraFOV(origin, lookat, vertical, 90, float64(nx)/float64(ny), aperature, distToFocus)
-	camera.ToggleBlur()
+	camera := base.NewCameraFOV(origin, lookat, vertical, 20,
+		float64(nx)/float64(ny), aperature, distToFocus)
+	// camera.ToggleBlur()
 
 	// Objects
 	objects := randomScene()

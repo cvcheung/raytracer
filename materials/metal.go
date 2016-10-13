@@ -37,7 +37,8 @@ func (m Metal) Color() primitives.Color {
 
 // Scatter calculates the incidental reflected ray if there is a reflection.
 func (m Metal) Scatter(rayIn *primitives.Ray, rec *HitRecord) (bool, *primitives.Ray) {
-	reflected := rayIn.Direction().Normalize().Reflect(rec.Normal())
+	// reflected := rayIn.Direction().Normalize().Reflect(rec.Normal())
+	reflected := utils.Reflect(rayIn.Direction().Normalize(), rec.Normal())
 	scattered := primitives.NewRay(rec.Point(),
 		reflected.Add(utils.RandomInUnitSphere().MultiplyScalar(m.fuzz)))
 	return scattered.Direction().Dot(rec.normal) > 0, scattered
