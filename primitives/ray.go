@@ -1,4 +1,4 @@
-package base
+package primitives
 
 // Ray ...
 type Ray struct {

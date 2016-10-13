@@ -6,17 +6,18 @@ import (
 	"image/color"
 	"image/png"
 	"os"
+	"raytracer/primitives"
 )
 
 // Scene ...
 type Scene struct {
-	eye, UL, UR, LR, LL Vec3
+	eye, UL, UR, LR, LL primitives.Vec3
 	Rect                image.Rectangle
 	image               [][]color.Color
 }
 
 // NewScene returns a new scene to be raytraced.
-func NewScene(eye, UL, UR, LR, LL Vec3) Scene {
+func NewScene(eye, UL, UR, LR, LL primitives.Vec3) Scene {
 	return Scene{}
 }
 

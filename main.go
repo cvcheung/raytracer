@@ -6,13 +6,16 @@ import (
 	"math/rand"
 	"os"
 	"raytracer/base"
+	"raytracer/materials"
+	"raytracer/objects"
+	"raytracer/primitives"
 )
 
 // MaxFloat64 ...
 const MaxFloat64 = 1.797693134862315708145274237317043567981e+308
 
-func shade(r *base.Ray, obj base.Object, depth int) base.Color {
-	var rec base.HitRecord
+func shade(r *primitives.Ray, obj objects.Object, depth int) primitives.Color {
+	var rec materials.HitRecord
 	if obj.Hit(r, 0.001, MaxFloat64, &rec) {
 		if depth < 50 {
 			m := rec.Material()
@@ -20,41 +23,49 @@ func shade(r *base.Ray, obj base.Object, depth int) base.Color {
 				return m.Color().Multiply(shade(scattered, obj, depth+1))
 			}
 		}
-		return base.Black
+		return primitives.Black
 	}
 	unitDirection := r.Direction().Normalize()
 	t := 0.5 * (unitDirection.Y() + 1.0)
-	return base.White.MultiplyScalar(1.0 - t).Add(base.Blue.MultiplyScalar(t))
+	return primitives.White.MultiplyScalar(1.0 - t).Add(primitives.Blue.MultiplyScalar(t))
 }
 
-func randomScene() *base.ObjectList {
-	objList := base.NewEmptyObjectList(500)
-	objList.Add(base.NewSphere(base.NewVec3(0, -1000, 0), 1000, base.NewLambertian(base.NewColor(0.5, 0.5, 0.5))))
+func randomScene() *objects.ObjectList {
+	objList := objects.NewEmptyObjectList(500)
+	objList.Add(objects.NewSphere(primitives.NewVec3(0, -1000, 0), 1000,
+		materials.NewLambertian(primitives.NewColor(0.5, 0.5, 0.5))))
 	for a := -11; a < 11; a++ {
 		for b := -11; b < 11; b++ {
+
 			rndMat := rand.Float64()
-			center := base.NewVec3(float64(a)+.9*rand.Float64(), 0.2, float64(b)+.9*rand.Float64())
-			if center.Subtract(base.NewVec3(4, 0.2, 0)).Magnitude() > 0.9 {
+			center := primitives.NewVec3(float64(a)+.9*rand.Float64(), 0.2,
+				float64(b)+.9*rand.Float64())
+
+			if center.Subtract(primitives.NewVec3(4, 0.2, 0)).Magnitude() > 0.9 {
 				if rndMat < 0.8 {
-					objList.Add(base.NewSphere(center, 0.2,
-						base.NewLambertian(base.NewRandomColor())))
+					objList.Add(objects.NewSphere(center, 0.2,
+						materials.NewLambertian(primitives.NewRandomColor())))
 				} else if rndMat < 0.95 {
-					objList.Add(base.NewSphere(center, 0.2,
-						base.NewRandomMetal()))
+					objList.Add(objects.NewSphere(center, 0.2,
+						materials.NewRandomMetal()))
 				} else {
-					objList.Add(base.NewSphere(center, 0.2, base.NewDielectric(1.5)))
+					objList.Add(objects.NewSphere(center, 0.2,
+						materials.NewDielectric(1.5)))
 				}
 			}
 		}
 	}
-	objList.Add(base.NewSphere(base.NewVec3(0, 1, 0), 1, base.NewDielectric(1.5)))
-	objList.Add(base.NewSphere(base.NewVec3(-4, 1, 0), 1, base.NewLambertian(base.NewColor(0.4, 0.2, 0.1))))
-	objList.Add(base.NewSphere(base.NewVec3(4, 1, 0), 1, base.NewMetal(base.NewColor(0.7, 0.6, 0.5), 0)))
+	objList.Add(objects.NewSphere(primitives.NewVec3(0, 1, 0), 1,
+		materials.NewDielectric(1.5)))
+	objList.Add(objects.NewSphere(primitives.NewVec3(-4, 1, 0), 1,
+		materials.NewLambertian(primitives.NewColor(0.4, 0.2, 0.1))))
+	objList.Add(objects.NewSphere(primitives.NewVec3(4, 1, 0), 1,
+		materials.NewMetal(primitives.NewColor(0.7, 0.6, 0.5), 0)))
 	return objList
 }
 
 func main() {
-	fp, err := os.Create("./output/part11.ppm")
+	fp, err := os.Create("./output/refactor.ppm")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -68,36 +79,21 @@ func main() {
 	ns := 500
 
 	// World space
-	// lowerLeftCorner := base.NewVec3(-2.0, -1.0, -1.0)
-	// horizontal := base.NewVec3(4.0, 0.0, 0.0)
-	// vertical := base.NewVec3(0.0, 2.0, 0.0)
-	// origin := base.NewVec3(0.0, 0.0, 0.0)
-	// camera := base.NewCamera(lowerLeftCorner, horizontal, vertical, origin)
-	origin := base.NewVec3(13, 2, 3)
-	lookat := base.NewVec3(0.0, 0.0, 0.0)
-	vertical := base.NewVec3(0.0, 1.0, 0.0)
+	origin := primitives.NewVec3(13, 2, 3)
+	lookat := primitives.NewVec3(0.0, 0.0, 0.0)
+	vertical := primitives.NewVec3(0.0, 1.0, 0.0)
 	distToFocus := 10.0
 	aperature := 0.1
-	camera := base.NewCameraFOV(origin, lookat, vertical, 20, float64(nx)/float64(ny), aperature, distToFocus)
+	camera := base.NewCameraFOV(origin, lookat, vertical, 90, float64(nx)/float64(ny), aperature, distToFocus)
+	camera.ToggleBlur()
 
 	// Objects
-	s1 := base.NewSphere(base.NewVec3(0, 0, -1), 0.5, base.NewLambertian(base.NewColor(0.1, 0.2, 0.5)))
-	s2 := base.NewSphere(base.NewVec3(0, -100.5, -1), 100, base.NewLambertian(base.NewColor(0.8, 0.8, 0.0)))
-	s3 := base.NewSphere(base.NewVec3(1, 0, -1), 0.5, base.NewMetal(base.NewColor(0.8, 0.6, 0.2), 1.0))
-	s4 := base.NewSphere(base.NewVec3(-1, 0, -1), 0.5, base.NewDielectric(1.5))
-	s5 := base.NewSphere(base.NewVec3(-1, 0, -1), -0.45, base.NewDielectric(1.5))
-
-	objects := base.NewObjectList(5, s1, s2, s3, s4, s5)
-	objects = randomScene()
-	// R := math.Cos(math.Pi / 4)
-	// s1 := base.NewSphere(base.NewVec3(-R, 0, -1), R, base.NewLambertian(base.NewColor(0, 0, 1)))
-	// s2 := base.NewSphere(base.NewVec3(R, 0, -1), R, base.NewLambertian(base.NewColor(1, 0, 0)))
-	// objects := base.NewObjectList(2, s1, s2)
+	objects := randomScene()
 
 	fp.WriteString(fmt.Sprintf("P3\n%d %d\n255\n", nx, ny))
 	for j := ny - 1; j >= 0; j-- {
 		for i := 0; i < nx; i++ {
-			color := base.NewEmptyColor()
+			color := primitives.NewEmptyColor()
 			for k := 0; k < ns; k++ {
 				u := (float64(i) + rand.Float64()) / float64(nx)
 				v := (float64(j) + rand.Float64()) / float64(ny)
@@ -106,7 +102,7 @@ func main() {
 			}
 			color = color.DivideScalar(float64(ns))
 			// Gamma correction
-			color = base.NewColor(math.Sqrt(color.R),
+			color = primitives.NewColor(math.Sqrt(color.R),
 				math.Sqrt(color.G),
 				math.Sqrt(color.B))
 			ir := int(255 * color.R)

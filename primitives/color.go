@@ -1,4 +1,4 @@
-package base
+package primitives
 
 import "math/rand"
 
@@ -41,22 +41,12 @@ func (c Color) RGBA() (r, g, b, a uint32) {
 }
 
 // Add updates the color object with the sum of two colors.
-// TODO Decide to use pointers or not.
-// The reasoning behind using a pointer is that our film is storing color
-// entries. By utilizing a pointer we can directly modify the color value
-// already there without need for reassignment.
 func (c Color) Add(c2 Color) Color {
-	// c.R = c.R + c2.R
-	// c.G = c.G + c2.G
-	// c.B = c.B + c2.B
 	return Color{c.R + c2.R, c.G + c2.G, c.B + c2.B}
 }
 
 // Multiply updates the color object the product of corresponding channels.
 func (c Color) Multiply(c2 Color) Color {
-	// c.R = c.R * c2.R
-	// c.G = c.G * c2.G
-	// c.B = c.B * c2.B
 	return Color{c.R * c2.R, c.G * c2.G, c.B * c2.B}
 }
 

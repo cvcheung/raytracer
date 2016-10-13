@@ -1,4 +1,4 @@
-package base
+package primitives
 
 import (
 	"fmt"
@@ -87,6 +87,25 @@ func (v Vec3) MultiplyScalar(s float64) Vec3 {
 // DivideScalar returns a vector divided by s.
 func (v Vec3) DivideScalar(s float64) Vec3 {
 	return Vec3{v.x / s, v.y / s, v.z / s}
+}
+
+// Reflect returns the vector in which the incidental vector reflects relative
+// to the normal.
+func (v Vec3) Reflect(n Vec3) Vec3 {
+	return v.Subtract(n.MultiplyScalar(2 * v.Dot(n)))
+}
+
+// Refract returns the vector from refraction according to Snell's Law.
+func (v Vec3) Refract(n Vec3, niOverNt float64) (bool, Vec3) {
+	uv := v.Normalize()
+	dt := uv.Dot(n)
+	discriminant := 1.0 - (niOverNt * niOverNt * (1 - dt*dt))
+	if discriminant > 0 {
+		refracted := uv.Subtract(n.MultiplyScalar(dt)).MultiplyScalar(niOverNt).
+			Subtract(n.MultiplyScalar(math.Sqrt(discriminant)))
+		return true, refracted
+	}
+	return false, Vec3{}
 }
 
 func (v Vec3) String() string {
