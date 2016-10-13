@@ -29,13 +29,15 @@ func (s *Sphere) Hit(r *primitives.Ray, tMin, tMax float64, rec *materials.HitRe
 
 	if discriminant > 0 {
 		if t := (-b - math.Sqrt(discriminant)) / (2 * a); t > tMin && t < tMax {
-			normal := rec.Point().Subtract(s.center).DivideScalar(s.radius)
-			rec.UpdateRecord(t, r.PointAt(t), normal, s.mat)
+			p := r.PointAt(t)
+			normal := p.Subtract(s.center).DivideScalar(s.radius)
+			rec.UpdateRecord(t, p, normal, s.mat)
 			return true
 		}
 		if t := (-b + math.Sqrt(discriminant)) / (2 * a); t > tMin && t < tMax {
-			normal := rec.Point().Subtract(s.center).DivideScalar(s.radius)
-			rec.UpdateRecord(t, r.PointAt(t), normal, s.mat)
+			p := r.PointAt(t)
+			normal := p.Subtract(s.center).DivideScalar(s.radius)
+			rec.UpdateRecord(t, p, normal, s.mat)
 			return true
 		}
 	}

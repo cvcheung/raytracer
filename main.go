@@ -47,9 +47,9 @@ func randomScene() *objects.ObjectList {
 				if rndMat < 0.8 {
 					objList.Add(objects.NewSphere(center, 0.2,
 						materials.NewLambertian(primitives.NewRandomColor())))
-					// } else if rndMat < 0.95 {
-					// 	objList.Add(objects.NewSphere(center, 0.2,
-					// 		materials.NewRandomMetal()))
+				} else if rndMat < 0.95 {
+					objList.Add(objects.NewSphere(center, 0.2,
+						materials.NewRandomMetal()))
 				} else {
 					objList.Add(objects.NewSphere(center, 0.2,
 						materials.NewDielectric(1.5)))
@@ -61,8 +61,8 @@ func randomScene() *objects.ObjectList {
 		materials.NewDielectric(1.5)))
 	objList.Add(objects.NewSphere(primitives.NewVec3(-4, 1, 0), 1,
 		materials.NewLambertian(primitives.NewColor(0.4, 0.2, 0.1))))
-	// objList.Add(objects.NewSphere(primitives.NewVec3(4, 1, 0), 1,
-	// 	materials.NewMetal(primitives.NewColor(0.7, 0.6, 0.5), 0)))
+	objList.Add(objects.NewSphere(primitives.NewVec3(4, 1, 0), 1,
+		materials.NewMetal(primitives.NewColor(0.7, 0.6, 0.5), 0)))
 	return objList
 }
 
