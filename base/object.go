@@ -20,6 +20,17 @@ func NewObjectList(length int, objs ...Object) *ObjectList {
 	return &ObjectList{objList}
 }
 
+// NewEmptyObjectList ...
+func NewEmptyObjectList(length int) *ObjectList {
+	objList := make([]Object, 0, length)
+	return &ObjectList{objList}
+}
+
+// Add an object to the object list.
+func (o *ObjectList) Add(obj Object) {
+	o.objects = append(o.objects, obj)
+}
+
 // Hit for an ObjectList iterates through the objects inside the list and puts
 // into the record the first object that would be hit.
 func (o *ObjectList) Hit(r *Ray, tMin, tMax float64, rec *HitRecord) bool {

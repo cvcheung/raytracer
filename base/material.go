@@ -65,6 +65,13 @@ func NewMetal(color Color, fuzz float64) Metal {
 	return Metal{color, fuzz}
 }
 
+// NewRandomMetal ...
+func NewRandomMetal() Metal {
+	color := NewColor(0.5*(1+rand.Float64()), 0.5*(1+rand.Float64()), 0.5*(1+rand.Float64()))
+	fuzz := 0.5 * rand.Float64()
+	return Metal{color, fuzz}
+}
+
 // Color ...
 func (m Metal) Color() Color {
 	return m.albedo

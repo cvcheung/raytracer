@@ -27,8 +27,34 @@ func shade(r *base.Ray, obj base.Object, depth int) base.Color {
 	return base.White.MultiplyScalar(1.0 - t).Add(base.Blue.MultiplyScalar(t))
 }
 
+func randomScene() *base.ObjectList {
+	objList := base.NewEmptyObjectList(500)
+	objList.Add(base.NewSphere(base.NewVec3(0, -1000, 0), 1000, base.NewLambertian(base.NewColor(0.5, 0.5, 0.5))))
+	for a := -11; a < 11; a++ {
+		for b := -11; b < 11; b++ {
+			rndMat := rand.Float64()
+			center := base.NewVec3(float64(a)+.9*rand.Float64(), 0.2, float64(b)+.9*rand.Float64())
+			if center.Subtract(base.NewVec3(4, 0.2, 0)).Magnitude() > 0.9 {
+				if rndMat < 0.8 {
+					objList.Add(base.NewSphere(center, 0.2,
+						base.NewLambertian(base.NewRandomColor())))
+				} else if rndMat < 0.95 {
+					objList.Add(base.NewSphere(center, 0.2,
+						base.NewRandomMetal()))
+				} else {
+					objList.Add(base.NewSphere(center, 0.2, base.NewDielectric(1.5)))
+				}
+			}
+		}
+	}
+	objList.Add(base.NewSphere(base.NewVec3(0, 1, 0), 1, base.NewDielectric(1.5)))
+	objList.Add(base.NewSphere(base.NewVec3(-4, 1, 0), 1, base.NewLambertian(base.NewColor(0.4, 0.2, 0.1))))
+	objList.Add(base.NewSphere(base.NewVec3(4, 1, 0), 1, base.NewMetal(base.NewColor(0.7, 0.6, 0.5), 0)))
+	return objList
+}
+
 func main() {
-	fp, err := os.Create("./output/part9-default.ppm")
+	fp, err := os.Create("./output/part11.ppm")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -47,11 +73,11 @@ func main() {
 	// vertical := base.NewVec3(0.0, 2.0, 0.0)
 	// origin := base.NewVec3(0.0, 0.0, 0.0)
 	// camera := base.NewCamera(lowerLeftCorner, horizontal, vertical, origin)
-	origin := base.NewVec3(3, 3, 2)
-	lookat := base.NewVec3(0.0, 0.0, -1.0)
+	origin := base.NewVec3(13, 2, 3)
+	lookat := base.NewVec3(0.0, 0.0, 0.0)
 	vertical := base.NewVec3(0.0, 1.0, 0.0)
-	distToFocus := 1.0
-	aperature := 2.0
+	distToFocus := 10.0
+	aperature := 0.1
 	camera := base.NewCameraFOV(origin, lookat, vertical, 20, float64(nx)/float64(ny), aperature, distToFocus)
 
 	// Objects
@@ -62,6 +88,7 @@ func main() {
 	s5 := base.NewSphere(base.NewVec3(-1, 0, -1), -0.45, base.NewDielectric(1.5))
 
 	objects := base.NewObjectList(5, s1, s2, s3, s4, s5)
+	objects = randomScene()
 	// R := math.Cos(math.Pi / 4)
 	// s1 := base.NewSphere(base.NewVec3(-R, 0, -1), R, base.NewLambertian(base.NewColor(0, 0, 1)))
 	// s2 := base.NewSphere(base.NewVec3(R, 0, -1), R, base.NewLambertian(base.NewColor(1, 0, 0)))

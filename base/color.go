@@ -1,5 +1,7 @@
 package base
 
+import "math/rand"
+
 // Color is our color struct to support color adding. RGB values range from 0
 // to 1.
 type Color struct {
@@ -22,6 +24,11 @@ func NewColor(r, g, b float64) Color {
 // NewEmptyColor returns a color object with RGB all initialized to 0.
 func NewEmptyColor() Color {
 	return Color{0, 0, 0}
+}
+
+// NewRandomColor returns a random color.
+func NewRandomColor() Color {
+	return Color{rand.Float64() * rand.Float64(), rand.Float64() * rand.Float64(), rand.Float64() * rand.Float64()}
 }
 
 // RGBA is taken from the go source code to implement the color.Color interface.
