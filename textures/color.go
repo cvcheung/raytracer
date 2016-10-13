@@ -1,6 +1,9 @@
-package primitives
+package textures
 
-import "math/rand"
+import (
+	"math/rand"
+	"raytracer/primitives"
+)
 
 // Color is our color struct to support color adding. RGB values range from 0
 // to 1.
@@ -30,6 +33,19 @@ func NewEmptyColor() Color {
 func NewRandomColor() Color {
 	return Color{rand.Float64() * rand.Float64(), rand.Float64() * rand.Float64(),
 		rand.Float64() * rand.Float64()}
+}
+
+// GetColor is used to have colors implment the texture interface. This allows
+// solid colors to be textures.
+func (c Color) GetColor(u, v float64, p primitives.Vec3) Color {
+	return c
+}
+
+// Update modifies the color with new parameters.
+func (c *Color) Update(c2 Color) {
+	c.R = c2.R
+	c.G = c2.G
+	c.B = c2.B
 }
 
 // RGBA is taken from the go source code to implement the color.Color interface.

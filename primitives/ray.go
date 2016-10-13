@@ -22,7 +22,7 @@ func WithTime(time float64) func(*Ray) {
 	}
 }
 
-// Update modifies the ray with new parameters
+// Update modifies the ray with new parameters.
 func (r *Ray) Update(origin, direction Vec3) {
 	r.origin = origin
 	r.direction = direction

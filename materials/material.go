@@ -1,10 +1,12 @@
 package materials
 
-import "raytracer/primitives"
+import (
+	"raytracer/primitives"
+	"raytracer/textures"
+)
 
 // Material is a container for how our polygons interact with light. All
 // materials in the package must implement this interface.
 type Material interface {
-	Color() primitives.Color
-	Scatter(rayIn *primitives.Ray, rec *HitRecord) (bool, *primitives.Ray)
+	Scatter(rayIn *primitives.Ray, attenuation *textures.Color, rec *HitRecord) (bool, *primitives.Ray)
 }

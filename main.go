@@ -7,10 +7,11 @@ import (
 	"os"
 	"raytracer/base"
 	"raytracer/primitives"
+	"raytracer/textures"
 )
 
 func main() {
-	fp, err := os.Create("./output/refactor-2.ppm")
+	fp, err := os.Create("./output/part12.ppm")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
@@ -29,7 +30,7 @@ func main() {
 	vertical := primitives.NewVec3(0.0, 1.0, 0.0)
 	distToFocus := 10.0
 	aperature := 0.1
-	camera := base.NewCameraFOV(origin, lookat, vertical, 60,
+	camera := base.NewCameraFOV(origin, lookat, vertical, 20,
 		float64(nx)/float64(ny), aperature, distToFocus)
 	// camera.ToggleBlur()
 
@@ -39,7 +40,7 @@ func main() {
 	fp.WriteString(fmt.Sprintf("P3\n%d %d\n255\n", nx, ny))
 	for j := ny - 1; j >= 0; j-- {
 		for i := 0; i < nx; i++ {
-			color := primitives.NewEmptyColor()
+			color := textures.NewEmptyColor()
 			for k := 0; k < ns; k++ {
 				u := (float64(i) + rand.Float64()) / float64(nx)
 				v := (float64(j) + rand.Float64()) / float64(ny)
@@ -48,7 +49,7 @@ func main() {
 			}
 			color = color.DivideScalar(float64(ns))
 			// Gamma correction
-			color = primitives.NewColor(math.Sqrt(color.R),
+			color = textures.NewColor(math.Sqrt(color.R),
 				math.Sqrt(color.G),
 				math.Sqrt(color.B))
 			ir := int(255 * color.R)

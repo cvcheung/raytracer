@@ -4,6 +4,7 @@ import (
 	"math"
 	"math/rand"
 	"raytracer/primitives"
+	"raytracer/textures"
 	"raytracer/utils"
 )
 
@@ -17,16 +18,12 @@ func NewDielectric(reflectIdx float64) Dielectric {
 	return Dielectric{reflectIdx}
 }
 
-// Color always returns white since glass is clear.
-func (d Dielectric) Color() primitives.Color {
-	return primitives.White
-}
-
 // Scatter calculates the incidental reflected/refracted ray if there is a
 // reflection/refraction.
-func (d Dielectric) Scatter(rayIn *primitives.Ray, rec *HitRecord) (bool, *primitives.Ray) {
+func (d Dielectric) Scatter(rayIn *primitives.Ray, attenuation *textures.Color, rec *HitRecord) (bool, *primitives.Ray) {
 	var outwardNormal primitives.Vec3
 	var niOverNt, cosine, refractProb float64
+	attenuation.Update(textures.White)
 	if rayIn.Direction().Dot(rec.Normal()) > 0 {
 		outwardNormal = rec.Normal().MultiplyScalar(-1)
 		niOverNt = d.reflectIdx

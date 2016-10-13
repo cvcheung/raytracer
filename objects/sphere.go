@@ -18,8 +18,8 @@ func NewSphere(center primitives.Vec3, radius float64, mat materials.Material) *
 	return &Sphere{center, radius, mat}
 }
 
-// Hit returns the value t the ray intersects with a point on the sphere,
-// otherwise returns -1.0.
+// Hit returns true if a ray intersects with the sphere and stores the result in
+// the passed record.
 func (s *Sphere) Hit(r *primitives.Ray, tMin, tMax float64, rec *materials.HitRecord) bool {
 	oc := r.Origin().Subtract(s.center)
 	a := r.Direction().Dot(r.Direction())
