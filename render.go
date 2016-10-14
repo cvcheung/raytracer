@@ -8,66 +8,74 @@ import (
 	"raytracer/objects"
 	"raytracer/primitives"
 	"raytracer/textures"
+	"runtime"
 	"sync"
 )
 
 // MaxFloat64 ...
 const MaxFloat64 = 1.797693134862315708145274237317043567981e+308
 
+// TODO add func options to have a variety of backgrounds.
 func shade(r *primitives.Ray, obj objects.Object, depth int) textures.Color {
 	var rec materials.HitRecord
-	var attenuation textures.Color
 	if obj.Hit(r, 0.001, MaxFloat64, &rec) {
+		m := rec.Material()
+		emit := m.Emitted(rec.U(), rec.V(), rec.Point())
 		if depth < 50 {
-			m := rec.Material()
+			var attenuation textures.Color
 			if bounce, scattered := m.Scatter(r, &attenuation, &rec); bounce {
-				return attenuation.Multiply(shade(scattered, obj, depth+1))
+				return emit.Add(attenuation.Multiply(shade(scattered, obj, depth+1)))
 			}
 		}
-		return textures.Black
+		return emit
 	}
 
-	// Background color gradient
-	unitDirection := r.Direction().Normalize()
-	t := 0.5 * (unitDirection.Y() + 1.0)
-	return textures.Gradient(t)
+	// Background color gradient. We use this to simulate light coming from the sky.
+	// unitDirection := r.Direction().Normalize()
+	// t := 0.5 * (unitDirection.Y() + 1.0)
+	// return textures.Gradient(t)
+	return textures.Black
 }
 
 // TODO move rendering from main to here.
 func render(ns int, fileName string, world objects.Object, camera *base.Camera, film *base.Film) {
 	// Parallelization
 	var wg sync.WaitGroup
+	numCPU := runtime.NumCPU()
 
-	for j := film.Height() - 1; j >= 0; j-- {
-		for i := 0; i < film.Width(); i++ {
-			wg.Add(1)
-			go func(i, j int) {
-				color := textures.NewEmptyColor()
-				for k := 0; k < ns*ns; k++ {
-					var u, v float64
-					if ns == 1 {
-						u = (float64(i) + 0.5) / float64(film.Width())
-						v = (float64(j) + 0.5) / float64(film.Height())
-					} else {
-						u = (float64(i) + rand.Float64()) / float64(film.Width())
-						v = (float64(j) + rand.Float64()) / float64(film.Height())
+	for cpu := 0; cpu < numCPU; cpu++ {
+		wg.Add(1)
+		go func(column int) {
+			for j := column; j < film.Height(); j += numCPU {
+				for i := 0; i < film.Width(); i++ {
+					color := textures.NewEmptyColor()
+					for k := 0; k < ns*ns; k++ {
+						var u, v float64
+						if ns == 1 {
+							u = (float64(i) + 0.5) / float64(film.Width())
+							v = (float64(j) + 0.5) / float64(film.Height())
+						} else {
+							u = (float64(i) + rand.Float64()) / float64(film.Width())
+							v = (float64(j) + rand.Float64()) / float64(film.Height())
+						}
+						r := camera.GetRay(u, v)
+						color = color.Add(shade(r, world, 0))
 					}
-					r := camera.GetRay(u, v)
-					color = color.Add(shade(r, world, 0))
+					color = color.DivideScalar(float64(ns * ns))
+					// Gamma correction
+					color = textures.NewColor(math.Sqrt(color.R),
+						math.Sqrt(color.G),
+						math.Sqrt(color.B))
+					ir := byte(255 * color.R)
+					ig := byte(255 * color.G)
+					ib := byte(255 * color.B)
+					film.Set(i, j, ir, ig, ib)
 				}
-				color = color.DivideScalar(float64(ns * ns))
-				// Gamma correction
-				color = textures.NewColor(math.Sqrt(color.R),
-					math.Sqrt(color.G),
-					math.Sqrt(color.B))
-				ir := byte(255 * color.R)
-				ig := byte(255 * color.G)
-				ib := byte(255 * color.B)
-				film.Set(i, j, ir, ig, ib)
-				wg.Done()
-			}(i, j)
-		}
+			}
+			wg.Done()
+		}(cpu)
 	}
+
 	wg.Wait()
 	film.Save(fileName)
 }

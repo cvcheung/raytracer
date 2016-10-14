@@ -12,7 +12,7 @@ func main() {
 	// Pixel counts
 	nx := 1000
 	ny := 500
-	ns := 16 // 16x Antialiasing
+	ns := 8 // 8x Antialiasing
 	film := base.NewFilm(nx, ny)
 
 	// World space
@@ -23,10 +23,10 @@ func main() {
 	aperature := 0.1
 	camera := base.NewCameraFOV(origin, lookat, vertical, 20,
 		float64(nx)/float64(ny), aperature, distToFocus)
-	// camera.ToggleBlur()
+	camera.ToggleBlur()
 
 	// Objects
 	world := randomScene()
-	render(ns, "woot", world, camera, film)
+	render(ns, "part13", world, camera, film)
 
 }

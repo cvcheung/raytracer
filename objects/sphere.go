@@ -4,6 +4,7 @@ import (
 	"math"
 	"raytracer/materials"
 	"raytracer/primitives"
+	"raytracer/utils"
 )
 
 // Sphere ...
@@ -31,13 +32,15 @@ func (s *Sphere) Hit(r *primitives.Ray, tMin, tMax float64, rec *materials.HitRe
 		if t := (-b - math.Sqrt(discriminant)) / (2 * a); t > tMin && t < tMax {
 			p := r.PointAt(t)
 			normal := p.Subtract(s.center).DivideScalar(s.radius)
-			rec.UpdateRecord(t, p, normal, s.mat)
+			u, v := utils.GetSphereUV(normal)
+			rec.UpdateRecord(t, u, v, p, normal, s.mat)
 			return true
 		}
 		if t := (-b + math.Sqrt(discriminant)) / (2 * a); t > tMin && t < tMax {
 			p := r.PointAt(t)
 			normal := p.Subtract(s.center).DivideScalar(s.radius)
-			rec.UpdateRecord(t, p, normal, s.mat)
+			u, v := utils.GetSphereUV(normal)
+			rec.UpdateRecord(t, u, v, p, normal, s.mat)
 			return true
 		}
 	}

@@ -46,3 +46,8 @@ func (d Dielectric) Scatter(rayIn *primitives.Ray, attenuation *textures.Color, 
 	}
 	return true, primitives.NewRay(rec.Point(), refVec)
 }
+
+// Emitted is defined to implement the material interface.
+func (d Dielectric) Emitted(u, v float64, p primitives.Vec3) textures.Color {
+	return textures.Black
+}

@@ -5,6 +5,13 @@ import (
 	"math"
 )
 
+// Unit vectors
+var (
+	UnitX = Vec3{1.0, 0, 0}
+	UnitY = Vec3{0, 1.0, 0}
+	UnitZ = Vec3{0, 0, 1.0}
+)
+
 // Vec3 ...
 type Vec3 struct {
 	x, y, z float64

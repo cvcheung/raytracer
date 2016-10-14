@@ -39,3 +39,8 @@ func (m Metal) Scatter(rayIn *primitives.Ray, attenuation *textures.Color, rec *
 		reflected.Add(utils.RandomInUnitSphere().MultiplyScalar(m.fuzz)))
 	return scattered.Direction().Dot(rec.normal) > 0, scattered
 }
+
+// Emitted is defined to implement the material interface.
+func (m Metal) Emitted(u, v float64, p primitives.Vec3) textures.Color {
+	return textures.Black
+}

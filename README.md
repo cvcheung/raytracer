@@ -10,3 +10,7 @@ TODO
 * motion blur
 * flag parsing
 * triangles
+* perlin noise
+* lights
+* matrix transformations
+* bounding box

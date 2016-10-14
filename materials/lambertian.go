@@ -23,3 +23,8 @@ func (l Lambertian) Scatter(rayIn *primitives.Ray, attenuation *textures.Color, 
 	target := rec.Point().Add(rec.Normal()).Add(utils.RandomInUnitSphere())
 	return true, primitives.NewRay(rec.Point(), target.Subtract(rec.Point()))
 }
+
+// Emitted is defined to implement the material interface.
+func (l Lambertian) Emitted(u, v float64, p primitives.Vec3) textures.Color {
+	return textures.Black
+}

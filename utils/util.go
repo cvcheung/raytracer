@@ -6,23 +6,13 @@ import (
 	"raytracer/primitives"
 )
 
-// Reflect returns the vector in which the incidental vector reflects relative
-// to the normal.
-func Reflect(v, n primitives.Vec3) primitives.Vec3 {
-	return v.Subtract(n.MultiplyScalar(2 * v.Dot(n)))
-}
-
-// Refract returns the vector from refraction according to Snell's Law.
-func Refract(v, n primitives.Vec3, niOverNt float64) (bool, primitives.Vec3) {
-	uv := v.Normalize()
-	dt := uv.Dot(n)
-	discriminant := 1.0 - (niOverNt * niOverNt * (1 - dt*dt))
-	if discriminant > 0 {
-		refracted := uv.Subtract(n.MultiplyScalar(dt)).MultiplyScalar(niOverNt).
-			Subtract(n.MultiplyScalar(math.Sqrt(discriminant)))
-		return true, refracted
-	}
-	return false, primitives.Vec3{}
+// GetSphereUV corresponding u, v coordinates in the image plane.
+func GetSphereUV(p primitives.Vec3) (float64, float64) {
+	phi := math.Atan2(p.Z(), p.X())
+	theta := math.Asin(p.Y())
+	u := 1 - (phi+math.Pi)/(2*math.Pi)
+	v := (theta + math.Pi/2) / math.Pi
+	return u, v
 }
 
 // RandomInUnitSphere returns a point in the unit sphere.

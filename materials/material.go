@@ -9,4 +9,5 @@ import (
 // materials in the package must implement this interface.
 type Material interface {
 	Scatter(rayIn *primitives.Ray, attenuation *textures.Color, rec *HitRecord) (bool, *primitives.Ray)
+	Emitted(u, v float64, p primitives.Vec3) textures.Color
 }
