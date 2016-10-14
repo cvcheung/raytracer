@@ -1,11 +1,14 @@
 package main
 
 import (
+	"math"
 	"math/rand"
+	"raytracer/base"
 	"raytracer/materials"
 	"raytracer/objects"
 	"raytracer/primitives"
 	"raytracer/textures"
+	"sync"
 )
 
 // MaxFloat64 ...
@@ -31,8 +34,42 @@ func shade(r *primitives.Ray, obj objects.Object, depth int) textures.Color {
 }
 
 // TODO move rendering from main to here.
-func render() {
+func render(ns int, fileName string, world objects.Object, camera *base.Camera, film *base.Film) {
+	// Parallelization
+	var wg sync.WaitGroup
 
+	for j := film.Height() - 1; j >= 0; j-- {
+		for i := 0; i < film.Width(); i++ {
+			wg.Add(1)
+			go func(i, j int) {
+				color := textures.NewEmptyColor()
+				for k := 0; k < ns*ns; k++ {
+					var u, v float64
+					if ns == 1 {
+						u = (float64(i) + 0.5) / float64(film.Width())
+						v = (float64(j) + 0.5) / float64(film.Height())
+					} else {
+						u = (float64(i) + rand.Float64()) / float64(film.Width())
+						v = (float64(j) + rand.Float64()) / float64(film.Height())
+					}
+					r := camera.GetRay(u, v)
+					color = color.Add(shade(r, world, 0))
+				}
+				color = color.DivideScalar(float64(ns * ns))
+				// Gamma correction
+				color = textures.NewColor(math.Sqrt(color.R),
+					math.Sqrt(color.G),
+					math.Sqrt(color.B))
+				ir := byte(255 * color.R)
+				ig := byte(255 * color.G)
+				ib := byte(255 * color.B)
+				film.Set(i, j, ir, ig, ib)
+				wg.Done()
+			}(i, j)
+		}
+	}
+	wg.Wait()
+	film.Save(fileName)
 }
 
 // Generates the random scene from `Ray Tracing in One Weekend`
