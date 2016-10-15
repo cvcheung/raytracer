@@ -14,3 +14,8 @@ TODO
 * lights
 * matrix transformations
 * bounding box
+
+## Sample Images
+![stress]
+
+[stress]: sample/stress.png
