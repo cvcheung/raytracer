@@ -5,26 +5,26 @@ import (
 	"raytracer/primitives"
 )
 
-// Rectangle ...
-type Rectangle struct {
+// RectangleXY ...
+type RectangleXY struct {
 	x0, x1, y0, y1, o float64
 	mat               materials.Material
 }
 
-// NewRectangle returns a new rectangle with formed by the following four
+// NewRectangleXY returns a new rectangle with formed by the following four
 // coordinates. o specifices the position on the z-axis. Why o - uvo.
-func NewRectangle(x0, x1, y0, y1, o float64, mat materials.Material) Rectangle {
+func NewRectangleXY(x0, x1, y0, y1, o float64, mat materials.Material) *RectangleXY {
 	if x0 > x1 {
 		x0, x1 = x1, x0
 	}
 	if y0 > y1 {
 		y0, y1 = y1, y0
 	}
-	return Rectangle{x0, x1, y0, y1, o, mat}
+	return &RectangleXY{x0, x1, y0, y1, o, mat}
 }
 
 // Hit ...
-func (rect Rectangle) Hit(r *primitives.Ray, tMin, tMax float64, rec *materials.HitRecord) bool {
+func (rect *RectangleXY) Hit(r *primitives.Ray, tMin, tMax float64, rec *materials.HitRecord) bool {
 	t := (rect.o - r.Origin().Z()) / r.Direction().Z()
 	if t < tMin || t > tMax {
 		return false
@@ -39,4 +39,10 @@ func (rect Rectangle) Hit(r *primitives.Ray, tMin, tMax float64, rec *materials.
 	p := r.PointAt(t)
 	rec.UpdateRecord(t, u, v, p, primitives.UnitZ, rect.mat)
 	return true
+}
+
+// BoundingBox ...
+func (rect *RectangleXY) BoundingBox(t0, t1 float64) (bool, *AABB) {
+	return true, NewAABB(primitives.NewVec3(rect.x0, rect.y0, rect.o-0.0001),
+		primitives.NewVec3(rect.x1, rect.y1, rect.o+0.0001))
 }

@@ -12,13 +12,10 @@ import (
 	"sync"
 )
 
-// MaxFloat64 ...
-const MaxFloat64 = 1.797693134862315708145274237317043567981e+308
-
 // TODO add func options to have a variety of backgrounds.
 func shade(r *primitives.Ray, obj objects.Object, depth int) textures.Color {
 	var rec materials.HitRecord
-	if obj.Hit(r, 0.001, MaxFloat64, &rec) {
+	if obj.Hit(r, 0.001, math.MaxFloat64, &rec) {
 		m := rec.Material()
 		emit := m.Emitted(rec.U(), rec.V(), rec.Point())
 		if depth < 50 {
@@ -81,7 +78,7 @@ func render(ns int, fileName string, world objects.Object, camera *base.Camera, 
 }
 
 // Generates the random scene from `Ray Tracing in One Weekend`
-func randomScene() *objects.ObjectList {
+func randomScene() objects.Object {
 	objList := objects.NewEmptyObjectList(500)
 	// checkered := textures.NewCheckered(textures.NewColor(0.2, 0.3, 0.1),
 	// 	textures.NewColor(0.9, 0.9, 0.9))
@@ -122,5 +119,7 @@ func randomScene() *objects.ObjectList {
 		materials.NewLambertian(textures.NewColor(0.4, 0.2, 0.1))))
 	objList.Add(objects.NewSphere(primitives.NewVec3(4, 1, 0), 1,
 		materials.NewMetal(textures.NewColor(0.7, 0.6, 0.5), 0)))
-	return objList
+	// return objList
+	list := objList.List()
+	return objects.NewBVHNode(list, len(list), 0, 1)
 }

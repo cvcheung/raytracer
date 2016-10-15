@@ -7,13 +7,11 @@ raytracer is a pure-go implementation of a raytracer that follows Peter Shirley'
 TODO
 
 ## Futurework
-* motion blur
 * flag parsing
 * triangles
 * perlin noise
 * lights
 * matrix transformations
-* bounding box
 
 ## Sample Images
 ![stress]

@@ -1,46 +1,107 @@
 package objects
 
 import (
+	"math"
 	"raytracer/materials"
 	"raytracer/primitives"
 )
 
 // BVHNode is a container that defines the search space for our rays using AABB
 // to reduce to computation time per pixel from linear to the number of objects
-// to sublinear.
+// to logarithmic.
 type BVHNode struct {
 	box         *AABB
-	left, right *BVHNode
+	left, right Object
 }
 
-// bvh_node::bvh_node(hitable **l, int n, float time0, float time1) {
-//     int axis = int(3*drand48());
-//     if (axis == 0)
-//        qsort(l, n, sizeof(hitable *), box_x_compare);
-//     else if (axis == 1)
-//        qsort(l, n, sizeof(hitable *), box_y_compare);
-//     else
-//        qsort(l, n, sizeof(hitable *), box_z_compare);
-//     if (n == 1) {
-//         left = right = l[0];
-//     }
-//     else if (n == 2) {
-//         left = l[0];
-//         right = l[1];
-//     }
-//     else {
-//         left = new bvh_node(l, n/2, time0, time1);
-//         right = new bvh_node(l + n/2, n - n/2, time0, time1);
-//     }
-//     aabb box_left, box_right;
-//     if(!left->bounding_box(time0,time1, box_left) || !right->bounding_box(time0,time1, box_right))
-//         std::cerr << "no bounding box in bvh_node constructor\n";
-//     box = surrounding_box(box_left, box_right);
-// }
+// NewBVHNode recursively constructs a BVH given a list of objects.
+func NewBVHNode(hitable []Object, n int, t0, t1 float64) *BVHNode {
+	boxes := make([]*AABB, n)
+	leftArea := make([]float64, n)
+	rightArea := make([]float64, n)
+	_, mainBox := hitable[0].BoundingBox(t0, t1)
+	for i := 1; i < n; i++ {
+		_, tempBox := hitable[i].BoundingBox(t0, t1)
+		mainBox = SurroundingBox(mainBox, tempBox)
+	}
+	axis := mainBox.LongestAxis()
+	if axis == 0 {
+		By(BoxCompareX).Sort(hitable)
+	} else if axis == 1 {
+		By(BoxCompareY).Sort(hitable)
+	} else {
+		By(BoxCompareZ).Sort(hitable)
+	}
 
-// func NewBVHNode(hitable *Object, n int, t0, t1 float64) *BVHNode {
-//   return &BVHNode{box, left, right}
-// }
+	for i, v := range hitable {
+		_, boxes[i] = v.BoundingBox(t0, t1)
+	}
+
+	leftBox := boxes[0]
+	leftArea[0] = leftBox.Area()
+	for i := 1; i < n-1; i++ {
+		leftBox = SurroundingBox(leftBox, boxes[i])
+		leftArea[i] = leftBox.Area()
+	}
+
+	rightBox := boxes[n-1]
+	rightArea[0] = rightBox.Area()
+	for i := n - 2; i > 0; i-- {
+		rightBox = SurroundingBox(rightBox, boxes[i])
+		rightArea[i] = rightBox.Area()
+	}
+
+	minSAH := math.MaxFloat64
+	var minSAHidx int
+	for i := 0; i < n-1; i++ {
+		SAH := float64(i)*leftArea[i] + (float64(n)-float64(i)-1)*rightArea[i+1]
+		if SAH < minSAH {
+			minSAH = SAH
+			minSAHidx = i
+		}
+	}
+
+	var left, right Object
+	if minSAHidx == 0 {
+		left = hitable[0]
+	} else {
+		left = NewBVHNode(hitable[:minSAHidx+1], minSAHidx+1, t0, t1)
+	}
+	if minSAHidx == (n - 2) {
+		right = hitable[minSAHidx+1]
+	} else {
+		right = NewBVHNode(hitable[minSAHidx+1:], n-minSAHidx-1, t0, t1)
+	}
+	box := mainBox
+	return &BVHNode{box, left, right}
+
+	// if axis == 0 {
+	// 	By(BoxCompareX).Sort(hitable)
+	// } else if axis == 1 {
+	// 	By(BoxCompareY).Sort(hitable)
+	// } else {
+	// 	By(BoxCompareZ).Sort(hitable)
+	// }
+	//
+	// var left, right Object
+	// if n == 1 {
+	// 	left = hitable[0]
+	// 	right = hitable[0]
+	// } else if n == 2 {
+	// 	left = hitable[0]
+	// 	right = hitable[1]
+	// } else {
+	// 	left = NewBVHNode(hitable[:n/2], n/2, t0, t1)
+	// 	right = NewBVHNode(hitable[n/2:], n-n/2, t0, t1)
+	// }
+	// leftHit, leftBox := left.BoundingBox(t0, t1)
+	// rightHit, rightBox := right.BoundingBox(t0, t1)
+	// if !leftHit || !rightHit {
+	// 	log.Println("no bounding box in BVHNode constructor")
+	// }
+	// box := SurroundingBox(leftBox, rightBox)
+	// return &BVHNode{box, left, right}
+}
 
 // NewEmptyBVHNode returns a BVHNode with its fields undeclared.
 func NewEmptyBVHNode() *BVHNode {
@@ -50,24 +111,30 @@ func NewEmptyBVHNode() *BVHNode {
 // Hit ...
 func (n *BVHNode) Hit(r *primitives.Ray, tMin, tMax float64, rec *materials.HitRecord) bool {
 	if n.box.Hit(r, tMin, tMax, rec) {
-		var leftRec, rightRec *materials.HitRecord
-		leftHit := n.left.Hit(r, tMin, tMax, leftRec)
-		rightHit := n.right.Hit(r, tMin, tMax, rightRec)
+		leftRec := materials.HitRecord{}
+		rightRec := materials.HitRecord{}
+		leftHit := n.left.Hit(r, tMin, tMax, &leftRec)
+		rightHit := n.right.Hit(r, tMin, tMax, &rightRec)
 		if leftHit && rightHit {
 			if leftRec.T() < rightRec.T() {
-				rec.CopyRecord(leftRec)
+				rec.CopyRecord(&leftRec)
 			} else {
-				rec.CopyRecord(rightRec)
+				rec.CopyRecord(&rightRec)
 			}
 			return true
 		} else if leftHit {
-			rec.CopyRecord(leftRec)
+			rec.CopyRecord(&leftRec)
 			return true
 		} else if rightHit {
-			rec.CopyRecord(rightRec)
+			rec.CopyRecord(&rightRec)
 			return true
 		}
 		return false
 	}
 	return false
+}
+
+// BoundingBox ...
+func (n *BVHNode) BoundingBox(t0, t1 float64) (bool, *AABB) {
+	return true, n.box
 }

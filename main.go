@@ -10,8 +10,8 @@ func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	// Pixel counts
-	nx := 1920
-	ny := 1080
+	nx := 1000
+	ny := 500
 	ns := 16 // 8x Antialiasing
 	film := base.NewFilm(nx, ny)
 
@@ -22,7 +22,7 @@ func main() {
 	vertical := primitives.NewVec3(0.0, 1.0, 0.0)
 	distToFocus := 10.0
 	aperature := 0.0
-	camera := base.NewCameraFOV(origin, lookat, vertical, 60,
+	camera := base.NewCameraFOV(origin, lookat, vertical, 20,
 		float64(nx)/float64(ny), aperature, distToFocus, 0, 1)
 	camera.ToggleBlur()
 
@@ -35,6 +35,6 @@ func main() {
 	// s5 := objects.NewSphere(primitives.NewVec3(-1, 0, -1), -0.45, materials.NewDielectric(1.5))
 
 	// world := objects.NewObjectList(4, s1, s2, s3, s4)
-	render(ns, "stress", world, camera, film)
+	render(ns, "bench", world, camera, film)
 
 }

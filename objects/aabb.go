@@ -17,6 +17,17 @@ func NewAABB(a, b primitives.Vec3) *AABB {
 	return &AABB{a, b}
 }
 
+// NewEmptyAABB returns a new AABB used for temporary variables.
+func NewEmptyAABB() *AABB {
+	return &AABB{}
+}
+
+// CopyAABB update the current record with the fields another record.
+func (a *AABB) CopyAABB(a2 *AABB) {
+	a.min = a2.min
+	a.max = a2.max
+}
+
 // Min returns the lower end that defines our AABB.
 func (a *AABB) Min() primitives.Vec3 {
 	return a.min
@@ -25,6 +36,25 @@ func (a *AABB) Min() primitives.Vec3 {
 // Max returns the lower end that defines our AABB.
 func (a *AABB) Max() primitives.Vec3 {
 	return a.max
+}
+
+// Area returns the area contained by the bounding box
+func (a *AABB) Area() float64 {
+	x := a.max.X() - a.min.X()
+	y := a.max.Y() - a.min.Y()
+	z := a.max.Z() - a.min.Z()
+	return 2 * (x*y + x*z + y*z)
+}
+
+// LongestAxis returns the longest axis of our AABB.
+func (a *AABB) LongestAxis() float64 {
+	max := math.Max(math.Max(a.max.X(), a.max.Y()), a.max.Z())
+	if max == a.max.X() {
+		return 0
+	} else if max == a.max.Y() {
+		return 1
+	}
+	return 0.5
 }
 
 // Hit ...
@@ -74,9 +104,4 @@ func SurroundingBox(box0, box1 *AABB) *AABB {
 		math.Max(box0.Max().Y(), box1.Max().Y()),
 		math.Max(box0.Max().Z(), box1.Max().Z()))
 	return NewAABB(small, big)
-}
-
-// BoxCompare ...
-func BoxCompare(a, b Object) bool {
-	return false
 }

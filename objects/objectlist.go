@@ -31,6 +31,11 @@ func (o *ObjectList) Add(obj Object) {
 	o.objects = append(o.objects, obj)
 }
 
+// List exports the list of objects.
+func (o *ObjectList) List() []Object {
+	return o.objects
+}
+
 // Hit for an ObjectList iterates through the objects inside the list and puts
 // into the record the first object that would be hit.
 func (o *ObjectList) Hit(r *primitives.Ray, tMin, tMax float64, rec *materials.HitRecord) bool {
@@ -47,7 +52,24 @@ func (o *ObjectList) Hit(r *primitives.Ray, tMin, tMax float64, rec *materials.H
 	return hit
 }
 
-// BoundingBox TODO
+// BoundingBox ...
 func (o *ObjectList) BoundingBox(t0, t1 float64) (bool, *AABB) {
-	return false, &AABB{}
+	box := NewEmptyAABB()
+	if len(o.objects) < 1 {
+		return false, box
+	}
+	hit, tempBox := o.objects[0].BoundingBox(t0, t1)
+	if !hit {
+		return false, box
+	}
+	box.CopyAABB(tempBox)
+	for i := 1; i < len(o.objects); i++ {
+		hit, tempBox = o.objects[i].BoundingBox(t0, t1)
+		if hit {
+			box = SurroundingBox(box, tempBox)
+		} else {
+			return false, box
+		}
+	}
+	return true, box
 }
