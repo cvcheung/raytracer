@@ -31,10 +31,10 @@ func shade(r *primitives.Ray, obj objects.Object, depth int) textures.Color {
 	}
 
 	// Background color gradient. We use this to simulate light coming from the sky.
-	// unitDirection := r.Direction().Normalize()
-	// t := 0.5 * (unitDirection.Y() + 1.0)
-	// return textures.Gradient(t)
-	return textures.Black
+	unitDirection := r.Direction().Normalize()
+	t := 0.5 * (unitDirection.Y() + 1.0)
+	return textures.Gradient(t)
+	// return textures.Black
 }
 
 // TODO move rendering from main to here.
@@ -96,8 +96,14 @@ func randomScene() *objects.ObjectList {
 
 			if center.Subtract(primitives.NewVec3(4, 0.2, 0)).Magnitude() > 0.9 {
 				if rndMat < 0.8 {
-					objList.Add(objects.NewSphere(center, 0.2,
-						materials.NewLambertian(textures.NewRandomColor())))
+					if move := rand.Float64(); move < 0.5 {
+						objList.Add(objects.NewMovingSphere(center,
+							center.Add(primitives.NewVec3(0, 0.5*(1+rand.Float64()), 0)),
+							0, 1, 0.2, materials.NewLambertian(textures.NewRandomColor())))
+					} else {
+						objList.Add(objects.NewSphere(center, 0.2,
+							materials.NewLambertian(textures.NewRandomColor())))
+					}
 				} else if rndMat < 0.95 {
 					objList.Add(objects.NewSphere(center, 0.2,
 						materials.NewRandomMetal()))

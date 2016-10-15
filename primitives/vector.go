@@ -14,6 +14,7 @@ var (
 
 // Vec3 ...
 type Vec3 struct {
+	// vec     []float64
 	x, y, z float64
 }
 

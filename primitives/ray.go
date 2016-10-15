@@ -39,6 +39,11 @@ func (r *Ray) Direction() Vec3 {
 	return r.direction
 }
 
+// Time returns the time of the ray to be used for motion blur.
+func (r *Ray) Time() float64 {
+	return r.time
+}
+
 // PointAt is our method to represent a ray as a paramtric function.
 // Returns a point as a Vec3.
 func (r *Ray) PointAt(f float64) Vec3 {
