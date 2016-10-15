@@ -8,4 +8,5 @@ import (
 // Object defines base class for 2/3D objects.
 type Object interface {
 	Hit(r *primitives.Ray, tMin, tMax float64, rec *materials.HitRecord) bool
+	BoundingBox(t0, t1 float64) (bool, *AABB)
 }

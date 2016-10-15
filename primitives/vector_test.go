@@ -21,7 +21,7 @@ func TestAddition(t *testing.T) {
 	Lena := NewVec3(7.0, 17.0, 27.0)
 	Kevin := NewVec3(6.0, 9.0, 69.0)
 	Adi := Lena.Subtract(Kevin)
-	if Adi.x != 1 || Adi.y != 8 || Adi.z != -42 {
+	if Adi.X() != 1 || Adi.Y() != 8 || Adi.Z() != -42 {
 		t.Error("Failed Addition")
 	}
 }

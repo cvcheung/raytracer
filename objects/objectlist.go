@@ -46,3 +46,8 @@ func (o *ObjectList) Hit(r *primitives.Ray, tMin, tMax float64, rec *materials.H
 	}
 	return hit
 }
+
+// BoundingBox TODO
+func (o *ObjectList) BoundingBox(t0, t1 float64) (bool, *AABB) {
+	return false, &AABB{}
+}

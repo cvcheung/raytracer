@@ -46,3 +46,9 @@ func (s *Sphere) Hit(r *primitives.Ray, tMin, tMax float64, rec *materials.HitRe
 	}
 	return false
 }
+
+// BoundingBox returns the AABB for a sphere.
+func (s *Sphere) BoundingBox(t0, t1 float64) (bool, *AABB) {
+	radii := primitives.NewVec3(s.radius, s.radius, s.radius)
+	return true, NewAABB(s.center.Subtract(radii), s.center.Add(radii))
+}

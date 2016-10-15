@@ -83,10 +83,12 @@ func render(ns int, fileName string, world objects.Object, camera *base.Camera, 
 // Generates the random scene from `Ray Tracing in One Weekend`
 func randomScene() *objects.ObjectList {
 	objList := objects.NewEmptyObjectList(500)
-	checkered := textures.NewCheckered(textures.NewColor(0.2, 0.3, 0.1),
-		textures.NewColor(0.9, 0.9, 0.9))
+	// checkered := textures.NewCheckered(textures.NewColor(0.2, 0.3, 0.1),
+	// 	textures.NewColor(0.9, 0.9, 0.9))
+	// objList.Add(objects.NewSphere(primitives.NewVec3(0, -1000, 0), 1000,
+	// 	materials.NewLambertian(checkered)))
 	objList.Add(objects.NewSphere(primitives.NewVec3(0, -1000, 0), 1000,
-		materials.NewLambertian(checkered)))
+		materials.NewLambertian(textures.NewColor(0.5, 0.5, 0.5))))
 	for a := -11; a < 11; a++ {
 		for b := -11; b < 11; b++ {
 

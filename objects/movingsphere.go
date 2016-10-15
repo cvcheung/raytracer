@@ -52,3 +52,14 @@ func (s *MovingSphere) Hit(r *primitives.Ray, tMin, tMax float64, rec *materials
 	}
 	return false
 }
+
+// BoundingBox returns the AABB for a moving sphere.
+func (s *MovingSphere) BoundingBox(t0, t1 float64) (bool, *AABB) {
+	radii := primitives.NewVec3(s.radius, s.radius, s.radius)
+	c0 := s.center(t0)
+	c1 := s.center(t1)
+	box0 := NewAABB(c0.Subtract(radii), c0.Add(radii))
+	box1 := NewAABB(c1.Subtract(radii), c1.Add(radii))
+	box := SurroundingBox(box0, box1)
+	return true, box
+}
