@@ -2,7 +2,10 @@ package main
 
 import (
 	"raytracer/base"
+	"raytracer/materials"
+	"raytracer/objects"
 	"raytracer/primitives"
+	"raytracer/textures"
 	"runtime"
 )
 
@@ -12,29 +15,38 @@ func main() {
 	// Pixel counts
 	nx := 1000
 	ny := 500
-	ns := 16 // 8x Antialiasing
+	ns := 1 // 8x Antialiasing
 	film := base.NewFilm(nx, ny)
 
 	// World space
-	origin := primitives.NewVec3(13, 2, 3)
-	// origin := primitives.NewVec3(4, 4, 4)
-	lookat := primitives.NewVec3(0.0, 0.0, 0.0)
-	vertical := primitives.NewVec3(0.0, 1.0, 0.0)
-	distToFocus := 10.0
-	aperature := 0.0
-	camera := base.NewCameraFOV(origin, lookat, vertical, 20,
-		float64(nx)/float64(ny), aperature, distToFocus, 0, 1)
-	camera.ToggleBlur()
+	// origin := primitives.NewVec3(0, 0, 10)
+	// // origin := primitives.NewVec3(4, 4, 4)
+	// lookat := primitives.NewVec3(0.0, 0.0, 0.0)
+	// vertical := primitives.NewVec3(0.0, 1.0, 0.0)
+	// distToFocus := 1.0
+	// aperature := 0.0
+	// camera := base.NewCameraFOV(origin, lookat, vertical, 20,
+	// 	float64(nx)/float64(ny), aperature, distToFocus, 0, 1)
+	// camera.ToggleBlur()
+	//
+	eye := primitives.NewVec3(0, 0, 1)
+	LL := primitives.NewVec3(-2, -1, 0)
+	LR := primitives.NewVec3(2, -1, 0)
+	UL := primitives.NewVec3(-2, 1, 0)
+	UR := primitives.NewVec3(2, 1, 0)
+	camera := base.NewCameraFromCoordinates(LL, LR, UL, UR, eye, float64(nx), float64(ny))
 
 	// Objects
-	world := randomScene()
-	// s1 := objects.NewSphere(primitives.NewVec3(0, -1000, 0), 1000, materials.NewLambertian(textures.NewColor(0.8, 0.8, 0)))
-	// s2 := objects.NewSphere(primitives.NewVec3(0, 2, 0), 2, materials.NewLambertian(textures.NewColor(0.8, 0.8, 0)))
-	// s3 := objects.NewSphere(primitives.NewVec3(0, 7, 0), 2, materials.NewDiffuseLight(textures.NewColor(4, 4, 4)))
-	// s4 := objects.NewRectangle(3, 5, 1, 3, -2, materials.NewDiffuseLight(textures.NewColor(4, 4, 4)))
-	// s5 := objects.NewSphere(primitives.NewVec3(-1, 0, -1), -0.45, materials.NewDielectric(1.5))
+	// world := randomScene()
+	ambient := textures.NewColor(0, 0, 0)
+	diffuse := textures.NewColor(0.5, 0.5, 0.5)
+	specular := textures.NewColor(0.5, 0.5, 0.5)
+	phong := 1.0
+	ambientLight := materials.NewAmbientLight(textures.NewColor(0.5, 0.5, 0.5))
+	world := objects.NewSphere(primitives.NewVec3(0, 0, -1), 1, materials.NewBlinnphong(ambient, diffuse, specular, phong, ambientLight))
+	lights := []materials.Light{materials.NewDirectionalLight(primitives.NewVec3(-1, 1, 1), textures.NewColor(.35, .7, 1))}
 
-	// world := objects.NewObjectList(4, s1, s2, s3, s4)
-	render(ns, "bench", world, camera, film)
+	scene := base.NewScene(camera, film, world, lights, ns)
+	scene.Render("test")
 
 }

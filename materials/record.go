@@ -2,6 +2,7 @@ package materials
 
 import (
 	"raytracer/primitives"
+	"raytracer/textures"
 )
 
 // HitRecord is a simple record to that records the information regarding where
@@ -9,12 +10,13 @@ import (
 type HitRecord struct {
 	t, u, v   float64
 	p, normal primitives.Vec3
+	specular  textures.Color
 	mat       Material
 }
 
 // NewRecord returns a new hit record with the following information.
 func NewRecord(t, u, v float64, p, normal primitives.Vec3, mat Material) *HitRecord {
-	return &HitRecord{t, u, v, p, normal, mat}
+	return &HitRecord{t, u, v, p, normal, textures.Black, mat}
 }
 
 // UpdateRecord modifies a record with new fields.
@@ -25,6 +27,16 @@ func (rec *HitRecord) UpdateRecord(t, u, v float64, p, normal primitives.Vec3, m
 	rec.p = p
 	rec.normal = normal
 	rec.mat = mat
+}
+
+// SetSpecular ...
+func (rec *HitRecord) SetSpecular(c textures.Color) {
+	rec.specular = c
+}
+
+// Specular ...
+func (rec *HitRecord) Specular() textures.Color {
+	return rec.specular
 }
 
 // T returns the t value that caused the ray to intersect the object.

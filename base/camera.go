@@ -22,6 +22,18 @@ func NewCamera(ll, horizontal, vertical, origin, u, v, w primitives.Vec3, lensRa
 		lensRadius, t0, t1, false}
 }
 
+// NewCameraFromCoordinates ...
+func NewCameraFromCoordinates(LL, LR, UL, UR, eye primitives.Vec3, x, y float64) *Camera {
+	lookat := LL.Add(LR).Add(UL).Add(UR).DivideScalar(4)
+	vertical := UL.Subtract(LL)
+	horizontal := UR.Subtract(UL)
+	vup := UL.Subtract(LL).Normalize()
+	w := eye.Subtract(lookat).Normalize()
+	u := vup.Cross(w).Normalize()
+	v := w.Cross(u)
+	return NewCamera(LL, horizontal, vertical, eye, u, v, w, 1, 0, 1)
+}
+
 // NewCameraFOV returns a new camera object from a particular viewpoint with the
 // specified FOV.
 func NewCameraFOV(origin, lookat, vup primitives.Vec3, vfov, aspect, aperature, distToFocus, t0, t1 float64) *Camera {
@@ -38,6 +50,7 @@ func NewCameraFOV(origin, lookat, vup primitives.Vec3, vfov, aspect, aperature, 
 		Subtract(w.MultiplyScalar(distToFocus))
 	horizontal := u.MultiplyScalar(2 * halfWidth * distToFocus)
 	vertical := v.MultiplyScalar(2 * halfHeight * distToFocus)
+
 	return NewCamera(ll, horizontal, vertical, origin, u, v, w, lensRadius, t0, t1)
 }
 

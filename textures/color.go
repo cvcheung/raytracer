@@ -1,6 +1,7 @@
 package textures
 
 import (
+	"fmt"
 	"math/rand"
 	"raytracer/primitives"
 )
@@ -39,6 +40,11 @@ func NewRandomColor() Color {
 // solid colors to be textures.
 func (c Color) GetColor(u, v float64, p primitives.Vec3) Color {
 	return c
+}
+
+// NotBlack ...
+func (c Color) NotBlack() bool {
+	return c.R > 0 && c.G > 0 && c.B > 0
 }
 
 // Update modifies the color with new parameters.
@@ -85,4 +91,8 @@ func (c Color) DivideScalar(f float64) Color {
 // Gradient returns a gradient of blue + white.
 func Gradient(t float64) Color {
 	return White.MultiplyScalar(1.0 - t).Add(Blue.MultiplyScalar(t))
+}
+
+func (c Color) String() string {
+	return fmt.Sprintf("{ R:%f, G:%f, B:%f }", c.R, c.G, c.B)
 }

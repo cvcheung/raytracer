@@ -8,6 +8,6 @@ import (
 // Material is a container for how our polygons interact with light. All
 // materials in the package must implement this interface.
 type Material interface {
-	Scatter(rayIn *primitives.Ray, attenuation *textures.Color, rec *HitRecord) (bool, *primitives.Ray)
+	Scatter(rayIn *primitives.Ray, attenuation *textures.Color, rec *HitRecord, depth int, lights []Light) (bool, *primitives.Ray)
 	Emitted(u, v float64, p primitives.Vec3) textures.Color
 }

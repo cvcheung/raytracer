@@ -20,7 +20,7 @@ func NewDielectric(reflectIdx float64) Dielectric {
 
 // Scatter calculates the incidental reflected/refracted ray if there is a
 // reflection/refraction.
-func (d Dielectric) Scatter(rayIn *primitives.Ray, attenuation *textures.Color, rec *HitRecord) (bool, *primitives.Ray) {
+func (d Dielectric) Scatter(rayIn *primitives.Ray, attenuation *textures.Color, rec *HitRecord, depth int, lights []Light) (bool, *primitives.Ray) {
 	var outwardNormal primitives.Vec3
 	var niOverNt, cosine, refractProb float64
 	attenuation.Update(textures.White)

@@ -48,7 +48,9 @@ func (a *AABB) Area() float64 {
 
 // LongestAxis returns the longest axis of our AABB.
 func (a *AABB) LongestAxis() float64 {
-	max := math.Max(math.Max(a.max.X(), a.max.Y()), a.max.Z())
+	max := math.Max(
+		math.Max(a.max.X()-a.min.X(), a.max.Y()-a.min.Y()),
+		a.max.Z()-a.min.Z())
 	if max == a.max.X() {
 		return 0
 	} else if max == a.max.Y() {

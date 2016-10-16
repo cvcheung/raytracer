@@ -32,7 +32,7 @@ func NewRandomMetal() Metal {
 }
 
 // Scatter calculates the incidental reflected ray if there is a reflection.
-func (m Metal) Scatter(rayIn *primitives.Ray, attenuation *textures.Color, rec *HitRecord) (bool, *primitives.Ray) {
+func (m Metal) Scatter(rayIn *primitives.Ray, attenuation *textures.Color, rec *HitRecord, depth int, lights []Light) (bool, *primitives.Ray) {
 	attenuation.Update(m.albedo.GetColor(0, 0, rec.Point()))
 	reflected := rayIn.Direction().Normalize().Reflect(rec.Normal())
 	scattered := primitives.NewRay(rec.Point(),

@@ -18,7 +18,7 @@ func NewLambertian(color textures.Texture) Lambertian {
 
 // Scatter randomly bounces the ray to give a fairly accurate representation of
 // the diffuse effect.
-func (l Lambertian) Scatter(rayIn *primitives.Ray, attenuation *textures.Color, rec *HitRecord) (bool, *primitives.Ray) {
+func (l Lambertian) Scatter(rayIn *primitives.Ray, attenuation *textures.Color, rec *HitRecord, depth int, lights []Light) (bool, *primitives.Ray) {
 	attenuation.Update(l.albedo.GetColor(0, 0, rec.Point()))
 	target := rec.Point().Add(rec.Normal()).Add(utils.RandomInUnitSphere())
 	return true, primitives.NewRay(rec.Point(), target.Subtract(rec.Point()))
