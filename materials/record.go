@@ -8,10 +8,10 @@ import (
 // HitRecord is a simple record to that records the information regarding where
 // the ray hit.
 type HitRecord struct {
-	t, u, v   float64
-	p, normal primitives.Vec3
-	specular  textures.Color
-	mat       Material
+	t, u, v    float64
+	p, normal  primitives.Vec3
+	reflective textures.Color
+	mat        Material
 }
 
 // NewRecord returns a new hit record with the following information.
@@ -29,14 +29,14 @@ func (rec *HitRecord) UpdateRecord(t, u, v float64, p, normal primitives.Vec3, m
 	rec.mat = mat
 }
 
-// SetSpecular ...
-func (rec *HitRecord) SetSpecular(c textures.Color) {
-	rec.specular = c
+// SetReflective ...
+func (rec *HitRecord) SetReflective(c textures.Color) {
+	rec.reflective = c
 }
 
-// Specular ...
-func (rec *HitRecord) Specular() textures.Color {
-	return rec.specular
+// Reflective ...
+func (rec *HitRecord) Reflective() textures.Color {
+	return rec.reflective
 }
 
 // T returns the t value that caused the ray to intersect the object.

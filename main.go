@@ -41,11 +41,15 @@ func main() {
 	ambient := textures.NewColor(0, 0, 0)
 	diffuse := textures.NewColor(0.5, 0.5, 0.5)
 	specular := textures.NewColor(0.5, 0.5, 0.5)
+	reflective := textures.NewColor(0.5, 0.5, 0.5)
 	phong := 1.0
 	ambientLight := materials.NewAmbientLight(textures.NewColor(0.5, 0.5, 0.5))
-	world := objects.NewSphere(primitives.NewVec3(0, 0, -1), 1, materials.NewBlinnphong(ambient, diffuse, specular, phong, ambientLight))
+	s1 := objects.NewSphere(primitives.NewVec3(0, 0, -1), 1, materials.NewBlinnphong(ambient, diffuse, specular, reflective, phong, ambientLight))
+	s2 := objects.NewSphere(primitives.NewVec3(-.5, .5, 0), 0.25, materials.NewBlinnphong(ambient, diffuse, specular, reflective, phong, ambientLight))
 	lights := []materials.Light{materials.NewDirectionalLight(primitives.NewVec3(-1, 1, 1), textures.NewColor(.35, .7, 1))}
 
+	world := objects.NewObjectList(2, s1, s2)
+	// world := s1
 	scene := base.NewScene(camera, film, world, lights, ns)
 	scene.Render("test")
 

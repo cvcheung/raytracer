@@ -33,11 +33,11 @@ func (s *Scene) shade(r *primitives.Ray, obj objects.Object, depth int) textures
 		emit := m.Emitted(rec.U(), rec.V(), rec.Point())
 		if depth < 50 {
 			var attenuation textures.Color
-			if bounce, scattered := m.Scatter(r, &attenuation, &rec, depth, s.lights); bounce {
-				if rec.Specular().NotBlack() {
-					return emit.Add(attenuation).Add(rec.Specular().Multiply(s.shade(scattered, obj, depth+1)))
-				}
-				return emit.Add(attenuation.Multiply(s.shade(scattered, obj, depth+1)))
+			if bounce, _ := m.Scatter(r, &attenuation, &rec, depth, s.lights); bounce {
+				// if rec.Reflective().NotBlack() {
+				// 	return emit.Add(attenuation).Add(rec.Reflective().Multiply(s.shade(scattered, obj, depth+1)))
+				// }
+				// return emit.Add(attenuation.Multiply(s.shade(scattered, obj, depth+1)))
 			}
 			return emit.Add(attenuation)
 		}
@@ -93,3 +93,27 @@ func (s *Scene) Render(fileName string) {
 	wg.Wait()
 	s.film.Save(fileName)
 }
+
+// Backup
+// // TODO add func options to have a variety of backgrounds.
+// func (s *Scene) shade(r *primitives.Ray, obj objects.Object, depth int) textures.Color {
+// 	var rec materials.HitRecord
+// 	if obj.Hit(r, 0.001, math.MaxFloat64, &rec) {
+// 		m := rec.Material()
+// 		emit := m.Emitted(rec.U(), rec.V(), rec.Point())
+// 		if depth < 50 {
+// 			var attenuation textures.Color
+// 			if bounce, scattered := m.Scatter(r, &attenuation, &rec, depth, s.lights); bounce {
+// 				return emit.Add(attenuation.Multiply(s.shade(scattered, obj, depth+1)))
+// 			}
+// 			return emit.Add(attenuation)
+// 		}
+// 		return emit
+// 	}
+//
+// 	// Background color gradient. We use this to simulate light coming from the sky.
+// 	// unitDirection := r.Direction().Normalize()
+// 	// t := 0.5 * (unitDirection.Y() + 1.0)
+// 	// return textures.Gradient(t)
+// 	return textures.Black
+// }
