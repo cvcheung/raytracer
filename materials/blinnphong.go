@@ -23,8 +23,10 @@ func NewBlinnphong(ambient, diffuse, specular, reflective textures.Color, phong 
 }
 
 // Scatter calculates the incidental reflected ray if there is a reflection.
-func (b Blinnphong) Scatter(rayIn *primitives.Ray, attenuation *textures.Color, rec *HitRecord, depth int, lights []Light) (bool, *primitives.Ray) {
-	attenuation.Update(b.shade(rayIn, rec, depth, lights))
+func (b Blinnphong) Scatter(rayIn *primitives.Ray, attenuation *textures.Color, rec *HitRecord, depth int, light Light, shadow bool) (bool, *primitives.Ray) {
+	if light != nil {
+		attenuation.Update(b.shade(rayIn, rec, depth, light, shadow))
+	}
 	reflected := rayIn.Direction().Normalize().Reflect(rec.Normal())
 	scattered := primitives.NewRay(rec.Point(), reflected)
 	rec.SetReflective(b.reflective)
@@ -36,20 +38,42 @@ func (b Blinnphong) Emitted(u, v float64, p primitives.Vec3) textures.Color {
 	return textures.Black
 }
 
-func (b Blinnphong) shade(rayIn *primitives.Ray, rec *HitRecord, depth int, lights []Light) textures.Color {
+func (b Blinnphong) shade(rayIn *primitives.Ray, rec *HitRecord, depth int, light Light, shadow bool) textures.Color {
 	color := textures.Black
-	if depth == 0 {
-		color = color.Add(b.ambient.Multiply(b.ambientLight.Intensity()))
-	}
-	for _, light := range lights {
-		n := rec.normal.Normalize()
+	// if depth == 0 {
+	// 	color = color.Add(b.ambient.Multiply(b.ambientLight.Intensity()))
+	// }
+	if !shadow {
+		n := rec.normal
 		l := light.LVec(rec.Point())
-		v := rayIn.Origin().Subtract(rec.Point()).Normalize()
-		r := l.MultiplyScalar(-1).Add(n.MultiplyScalar(2 * l.Dot(n))).Normalize()
 		color = color.Add(b.diffuse.Multiply(light.Intensity()).
-			MultiplyScalar(math.Max(0, rec.normal.Dot(l))))
+			MultiplyScalar(math.Max(0, n.Dot(l))))
+
+		v := rayIn.Origin().Subtract(rec.Point()).Normalize()
+		lh := l.MultiplyScalar(-1)
+		rh := n.MultiplyScalar(2 * l.Dot(n))
+		r := rh.Add(lh)
+
+		if r.Dot(v)/(r.Magnitude()*v.Magnitude()) < 0 {
+			return color
+		}
+
+		rbv := r.Dot(v)
+		rbv = math.Pow(rbv, b.phong)
+
 		color = color.Add(b.specular.Multiply(light.Intensity()).
-			MultiplyScalar(math.Max(0, math.Pow(r.Dot(v), b.phong))))
+			MultiplyScalar(rbv))
+		distance := light.Direction(rec.Point()).Magnitude()
+		if light.Falloff() == 1 {
+			color = color.DivideScalar(distance)
+		} else if light.Falloff() == 2 {
+			color = color.DivideScalar(distance * distance)
+		}
 	}
 	return color
+}
+
+// GetAmbient ...
+func (b Blinnphong) GetAmbient() textures.Color {
+	return b.ambient.Multiply(b.ambientLight.Intensity())
 }

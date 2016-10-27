@@ -33,13 +33,27 @@ func (s *Scene) shade(r *primitives.Ray, obj objects.Object, depth int) textures
 		emit := m.Emitted(rec.U(), rec.V(), rec.Point())
 		if depth < 50 {
 			var attenuation textures.Color
-			if bounce, _ := m.Scatter(r, &attenuation, &rec, depth, s.lights); bounce {
-				// if rec.Reflective().NotBlack() {
-				// 	return emit.Add(attenuation).Add(rec.Reflective().Multiply(s.shade(scattered, obj, depth+1)))
-				// }
-				// return emit.Add(attenuation.Multiply(s.shade(scattered, obj, depth+1)))
+			finalColor := textures.Black
+			if depth == 0 {
+				finalColor = finalColor.Add(m.GetAmbient())
 			}
-			return emit.Add(attenuation)
+			for _, light := range s.lights {
+				var shadowRec materials.HitRecord
+				direction := light.Direction(rec.Point())
+				shadowRay := primitives.NewRay(rec.Point(), direction)
+				shadow := obj.Hit(shadowRay, 0.001, math.MaxFloat64, &shadowRec)
+				if shadow {
+					continue
+				}
+				m.Scatter(r, &attenuation, &rec, depth, light, shadow)
+				finalColor = finalColor.Add(attenuation)
+			}
+			if bounce, scattered := m.Scatter(r, &attenuation, &rec, depth, nil, false); bounce {
+				if rec.Reflective().NotBlack() {
+					return emit.Add(finalColor).Add(rec.Reflective().Multiply(s.shade(scattered, obj, depth+1)))
+				}
+			}
+			return emit.Add(finalColor)
 		}
 		return emit
 	}
@@ -76,6 +90,7 @@ func (s *Scene) Render(fileName string) {
 						color = color.Add(s.shade(r, s.world, 0))
 					}
 					color = color.DivideScalar(float64(s.ns * s.ns))
+					color = color.Clip()
 					// Gamma correction
 					color = textures.NewColor(math.Sqrt(color.R),
 						math.Sqrt(color.G),
@@ -103,7 +118,7 @@ func (s *Scene) Render(fileName string) {
 // 		emit := m.Emitted(rec.U(), rec.V(), rec.Point())
 // 		if depth < 50 {
 // 			var attenuation textures.Color
-// 			if bounce, scattered := m.Scatter(r, &attenuation, &rec, depth, s.lights); bounce {
+// 			if bounce, scattered := m.Scatter(r, &attenuation, &rec, depth, nil, false); bounce {
 // 				return emit.Add(attenuation.Multiply(s.shade(scattered, obj, depth+1)))
 // 			}
 // 			return emit.Add(attenuation)

@@ -2,6 +2,7 @@ package textures
 
 import (
 	"fmt"
+	"math"
 	"math/rand"
 	"raytracer/primitives"
 )
@@ -91,6 +92,14 @@ func (c Color) DivideScalar(f float64) Color {
 // Gradient returns a gradient of blue + white.
 func Gradient(t float64) Color {
 	return White.MultiplyScalar(1.0 - t).Add(Blue.MultiplyScalar(t))
+}
+
+// Clip ...
+func (c Color) Clip() Color {
+	r := math.Min(1.0, c.R)
+	g := math.Min(1.0, c.G)
+	b := math.Min(1.0, c.B)
+	return Color{r, g, b}
 }
 
 func (c Color) String() string {

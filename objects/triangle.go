@@ -15,8 +15,8 @@ type Triangle struct {
 }
 
 // NewTriangle ....
-func NewTriangle(v1, v2, v3, t1, t2, t3 primitives.Vec3, mat materials.Material) *Triangle {
-	triangle := Triangle{v1: v1, v2: v2, t1: t1, t2: t2, t3: t3, mat: mat}
+func NewTriangle(v1, v2, v3 primitives.Vec3, mat materials.Material) *Triangle {
+	triangle := Triangle{v1: v1, v2: v2, mat: mat}
 	triangle.Normalize()
 	return &triangle
 }

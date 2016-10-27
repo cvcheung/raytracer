@@ -32,7 +32,7 @@ func NewRandomMetal() Metal {
 }
 
 // Scatter calculates the incidental reflected ray if there is a reflection.
-func (m Metal) Scatter(rayIn *primitives.Ray, attenuation *textures.Color, rec *HitRecord, depth int, lights []Light) (bool, *primitives.Ray) {
+func (m Metal) Scatter(rayIn *primitives.Ray, attenuation *textures.Color, rec *HitRecord, depth int, lights Light, shadow bool) (bool, *primitives.Ray) {
 	attenuation.Update(m.albedo.GetColor(0, 0, rec.Point()))
 	reflected := rayIn.Direction().Normalize().Reflect(rec.Normal())
 	scattered := primitives.NewRay(rec.Point(),
@@ -42,5 +42,10 @@ func (m Metal) Scatter(rayIn *primitives.Ray, attenuation *textures.Color, rec *
 
 // Emitted is defined to implement the material interface.
 func (m Metal) Emitted(u, v float64, p primitives.Vec3) textures.Color {
+	return textures.Black
+}
+
+// GetAmbient ...
+func (m Metal) GetAmbient() textures.Color {
 	return textures.Black
 }

@@ -15,8 +15,10 @@ func randomScene() objects.Object {
 	// 	textures.NewColor(0.9, 0.9, 0.9))
 	// objList.Add(objects.NewSphere(primitives.NewVec3(0, -1000, 0), 1000,
 	// 	materials.NewLambertian(checkered)))
+	// objList.Add(objects.NewSphere(primitives.NewVec3(0, -1000, 0), 1000,
+	// 	materials.NewLambertian(textures.NewColor(0.5, 0.5, 0.5))))
 	objList.Add(objects.NewSphere(primitives.NewVec3(0, -1000, 0), 1000,
-		materials.NewLambertian(textures.NewColor(0.5, 0.5, 0.5))))
+		materials.NewDiffuseLight(textures.NewColor(10, 10, 10))))
 	for a := -11; a < 11; a++ {
 		for b := -11; b < 11; b++ {
 
