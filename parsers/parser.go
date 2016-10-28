@@ -103,6 +103,12 @@ func parseLine(line []string, opt *Options) {
 			v2 := primitives.NewVec3(bx, by, bz)
 			v3 := primitives.NewVec3(cx, cy, cz)
 
+			if len(opt.transforms) > 0 {
+				transform := transformations.Coalesce(opt.transforms)
+				v1 = transformations.Transform(transform, v1)
+				v2 = transformations.Transform(transform, v2)
+				v3 = transformations.Transform(transform, v3)
+			}
 			opt.AddObjects(objects.NewTriangle(v1, v2, v3, opt.mat))
 			i += 9
 			continue

@@ -11,14 +11,14 @@ import (
 // Generates the random scene from `Ray Tracing in One Weekend`
 func randomScene() objects.Object {
 	objList := objects.NewEmptyObjectList(500)
-	// checkered := textures.NewCheckered(textures.NewColor(0.2, 0.3, 0.1),
-	// 	textures.NewColor(0.9, 0.9, 0.9))
-	// objList.Add(objects.NewSphere(primitives.NewVec3(0, -1000, 0), 1000,
-	// 	materials.NewLambertian(checkered)))
+	checkered := textures.NewCheckered(textures.NewColor(0.2, 0.3, 0.1),
+		textures.NewColor(0.9, 0.9, 0.9))
+	objList.Add(objects.NewSphere(primitives.NewVec3(0, -1000, 0), 1000,
+		materials.NewLambertian(checkered)))
 	// objList.Add(objects.NewSphere(primitives.NewVec3(0, -1000, 0), 1000,
 	// 	materials.NewLambertian(textures.NewColor(0.5, 0.5, 0.5))))
-	objList.Add(objects.NewSphere(primitives.NewVec3(0, -1000, 0), 1000,
-		materials.NewDiffuseLight(textures.NewColor(10, 10, 10))))
+	// objList.Add(objects.NewSphere(primitives.NewVec3(0, -1000, 0), 1000,
+	// 	materials.NewDiffuseLight(textures.NewColor(10, 10, 10))))
 	for a := -11; a < 11; a++ {
 		for b := -11; b < 11; b++ {
 
