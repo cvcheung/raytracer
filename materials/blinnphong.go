@@ -40,9 +40,6 @@ func (b Blinnphong) Emitted(u, v float64, p primitives.Vec3) textures.Color {
 
 func (b Blinnphong) shade(rayIn *primitives.Ray, rec *HitRecord, depth int, light Light, shadow bool) textures.Color {
 	color := textures.Black
-	// if depth == 0 {
-	// 	color = color.Add(b.ambient.Multiply(b.ambientLight.Intensity()))
-	// }
 	if !shadow {
 		n := rec.normal
 		l := light.LVec(rec.Point())

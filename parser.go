@@ -62,7 +62,8 @@ func parseLine(line []string, opt *options) {
 
 			nx := float64(opt.nx)
 			ny := float64(opt.ny)
-			camera := base.NewCameraFromCoordinates(LL, LR, UL, UR, eye, nx, ny)
+			camera := base.NewCameraFromCoordinates(LL, LR, UL, UR, eye, nx, ny,
+				opt.vfov, opt.aperture, opt.distFocus, opt.fovcam)
 			opt.setCamera(camera)
 			i += 15
 			continue

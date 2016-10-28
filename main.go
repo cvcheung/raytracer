@@ -18,18 +18,19 @@ func main() {
 	filename := flag.String("o", "output", "The filename.")
 	random := flag.Bool("r", false, "Generate a random scene.")
 	blur := flag.Bool("blur", false, "Turns on camera blur, effects change based on camera.")
-	vfov := flag.Int("vfov", 60, "Sets the camera fov, requires fovcam.")
-	aperture := flag.Int("apt", 0, "Sets the aperature of the camera, requires fovcam.")
+	vfov := flag.Float64("vfov", 60, "Sets the camera fov, requires fovcam.")
+	distFocus := flag.Float64("dist", 1, "Sets the distance to focus.")
+	aperture := flag.Float64("apt", 0, "Sets the aperature of the camera, requires fovcam.")
 	fovcam := flag.Bool("fovcam", false, "Use a camera with a specified field of view.")
 	flag.Parse()
-
-	opts.vfov = *vfov
-	opts.aperture = *aperture
-	opts.fovcam = *fovcam
 
 	if *random {
 
 	}
+	opts.vfov = *vfov
+	opts.aperture = *aperture
+	opts.fovcam = *fovcam
+	opts.distFocus = *distFocus
 	opts.setDimensions(int(*x), int(*y))
 	opts.setAntialiasing(int(*aa))
 	parseFile(*input, opts)

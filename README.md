@@ -8,10 +8,12 @@ The basic features supported from command line are as follows.
 ```Shell
 -aa uint
     Sets the antialising amount. (default 8)
--apt int
+-apt float
     Sets the aperature of the camera, requires fovcam.
 -blur
     Turns on camera blur, effects change based on camera.
+-dist float
+    Sets the distance to focus. (default 1)
 -f string
     File to load.
 -fovcam
@@ -19,7 +21,7 @@ The basic features supported from command line are as follows.
 -o string
     The filename. (default "output")
 -r	Generate a random scene.
--vfov int
+-vfov float
     Sets the camera fov, requires fovcam. (default 60)
 -x uint
     Specifies the width of the image. (default 500)
