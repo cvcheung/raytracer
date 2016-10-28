@@ -29,8 +29,7 @@ func (t *Triangle) Hit(r *primitives.Ray, tMin, tMax float64, rec *materials.Hit
 	e2 := t.v3.Subtract(t.v1)
 	pv := r.Direction().Cross(e2)
 	det := e1.Dot(pv)
-	if det < tMin && det > -1*tMin {
-		// May want to change to solely consider front-hitting values when det > 0
+	if det < tMin {
 		return false
 	}
 	divDet := 1 / det
