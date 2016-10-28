@@ -3,13 +3,14 @@ package main
 import (
 	"flag"
 	"raytracer/base"
+	"raytracer/parsers"
 	"runtime"
 )
 
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	opts := withOptions()
+	opts := parsers.WithOptions()
 
 	x := flag.Uint("x", 500, "Specifies the width of the image.")
 	y := flag.Uint("y", 500, "Specifies the height of the image.")
@@ -27,13 +28,13 @@ func main() {
 	if *random {
 
 	}
-	opts.vfov = *vfov
-	opts.aperture = *aperture
-	opts.fovcam = *fovcam
-	opts.distFocus = *distFocus
-	opts.setDimensions(int(*x), int(*y))
-	opts.setAntialiasing(int(*aa))
-	parseFile(*input, opts)
+	opts.SetVFOV(*vfov)
+	opts.SetAperture(*aperture)
+	opts.SetFOVCam(*fovcam)
+	opts.SetDistFocus(*distFocus)
+	opts.SetDimensions(int(*x), int(*y))
+	opts.SetAntialiasing(int(*aa))
+	parsers.ParseFile(*input, opts)
 
 	// World space
 	// origin := primitives.NewVec3(0, 0, 10)
@@ -67,8 +68,9 @@ func main() {
 	// cmdObjects = objects.NewObjectList(2, s1, s2)
 	// world := s1
 	if *blur {
-		opts.camera.ToggleBlur()
+		opts.GetCamera().ToggleBlur()
 	}
-	scene := base.NewScene(opts.camera, opts.film, opts.world, opts.lights, opts.ns)
+	scene := base.NewScene(opts.GetCamera(), opts.GetFilm(), opts.GetWorld(),
+		opts.GetLights(), opts.GetAntialiasing())
 	scene.Render(*filename)
 }

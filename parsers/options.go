@@ -1,4 +1,4 @@
-package main
+package parsers
 
 import (
 	"raytracer/base"
@@ -10,7 +10,8 @@ import (
 	"github.com/gonum/matrix/mat64"
 )
 
-type options struct {
+// Options ...
+type Options struct {
 	nx, ny, ns                int
 	vfov, aperture, distFocus float64
 	film                      *base.Film
@@ -23,8 +24,8 @@ type options struct {
 	fovcam                    bool
 }
 
-// withOptions returns an options struct with the specified parameters
-func withOptions(parameters ...func(*options)) *options {
+// WithOptions returns an options struct with the specified parameters
+func WithOptions(parameters ...func(*Options)) *Options {
 	origin := primitives.NewVec3(0, 0, 10)
 	lookat := primitives.NewVec3(0.0, 0.0, 0.0)
 	vertical := primitives.NewVec3(0.0, 1.0, 0.0)
@@ -33,7 +34,7 @@ func withOptions(parameters ...func(*options)) *options {
 	camera := base.NewCameraFOV(origin, lookat, vertical, 20,
 		float64(500)/float64(500), aperature, distToFocus, 0, 1)
 	camera.ToggleBlur()
-	opts := &options{nx: 500, ny: 500, ns: 8, film: base.NewFilm(500, 500),
+	opts := &Options{nx: 500, ny: 500, ns: 8, film: base.NewFilm(500, 500),
 		camera: camera, ambientLight: materials.NewAmbientLight(textures.White),
 		lights: make([]materials.Light, 0, 10), world: objects.NewEmptyObjectList(10),
 		mat: materials.NewBlinnphong(textures.White, textures.White, textures.White,
@@ -45,35 +46,88 @@ func withOptions(parameters ...func(*options)) *options {
 	return opts
 }
 
-func (o *options) setDimensions(nx, ny int) {
+// SetDimensions ...
+func (o *Options) SetDimensions(nx, ny int) {
 	o.nx = nx
 	o.ny = ny
 	o.film = base.NewFilm(nx, ny)
 }
 
-func (o *options) setAntialiasing(ns int) {
+// SetAntialiasing ...
+func (o *Options) SetAntialiasing(ns int) {
 	o.ns = ns
 }
 
-func (o *options) setCamera(cam *base.Camera) {
+// SetCamera ...
+func (o *Options) SetCamera(cam *base.Camera) {
 	o.camera = cam
 }
 
-func (o *options) setAmbientLight(light materials.Light) {
+// SetAmbientLight ...
+func (o *Options) SetAmbientLight(light materials.Light) {
 	o.ambientLight = light
 }
 
-func (o *options) setMat(mat materials.Material) {
+// SetMat ...
+func (o *Options) SetMat(mat materials.Material) {
 	o.mat = mat
 }
-func (o *options) addLights(lights ...materials.Light) {
+
+// SetVFOV ...
+func (o *Options) SetVFOV(vfov float64) {
+	o.vfov = vfov
+}
+
+// SetAperture ...
+func (o *Options) SetAperture(aperture float64) {
+	o.aperture = aperture
+}
+
+// SetDistFocus ...
+func (o *Options) SetDistFocus(distFocus float64) {
+	o.distFocus = distFocus
+}
+
+// SetFOVCam ...
+func (o *Options) SetFOVCam(fovcam bool) {
+	o.fovcam = fovcam
+}
+
+// AddLights ...
+func (o *Options) AddLights(lights ...materials.Light) {
 	for _, l := range lights {
 		o.lights = append(o.lights, l)
 	}
 }
 
-func (o *options) addObjects(objects ...objects.Object) {
+// AddObjects ...
+func (o *Options) AddObjects(objects ...objects.Object) {
 	for _, obj := range objects {
 		o.world.Add(obj)
 	}
+}
+
+// GetCamera ...
+func (o *Options) GetCamera() *base.Camera {
+	return o.camera
+}
+
+// GetFilm ...
+func (o *Options) GetFilm() *base.Film {
+	return o.film
+}
+
+// GetWorld ...
+func (o *Options) GetWorld() *objects.ObjectList {
+	return o.world
+}
+
+// GetLights ...
+func (o *Options) GetLights() []materials.Light {
+	return o.lights
+}
+
+// GetAntialiasing ...
+func (o *Options) GetAntialiasing() int {
+	return o.ns
 }

@@ -1,4 +1,4 @@
-package main
+package parsers
 
 import (
 	"bufio"
@@ -14,7 +14,8 @@ import (
 	"strings"
 )
 
-func parseFile(filename string, opt *options) {
+// ParseFile ...
+func ParseFile(filename string, opt *Options) {
 	file, err := os.Open(filename)
 	if err != nil {
 		log.Fatal(err)
@@ -31,7 +32,7 @@ func parseFile(filename string, opt *options) {
 	}
 }
 
-func parseLine(line []string, opt *options) {
+func parseLine(line []string, opt *Options) {
 	for i := 0; i < len(line); i++ {
 		if line[i] == "cam" {
 			ex, _ := strconv.ParseFloat(line[i+1], 64)
@@ -64,7 +65,7 @@ func parseLine(line []string, opt *options) {
 			ny := float64(opt.ny)
 			camera := base.NewCameraFromCoordinates(LL, LR, UL, UR, eye, nx, ny,
 				opt.vfov, opt.aperture, opt.distFocus, opt.fovcam)
-			opt.setCamera(camera)
+			opt.SetCamera(camera)
 			i += 15
 			continue
 		} else if line[i] == "sph" {
@@ -72,7 +73,7 @@ func parseLine(line []string, opt *options) {
 			cy, _ := strconv.ParseFloat(line[i+2], 64)
 			cz, _ := strconv.ParseFloat(line[i+3], 64)
 			r, _ := strconv.ParseFloat(line[i+4], 64)
-			opt.addObjects(objects.NewSphere(primitives.NewVec3(cx, cy, cz), r, opt.mat))
+			opt.AddObjects(objects.NewSphere(primitives.NewVec3(cx, cy, cz), r, opt.mat))
 			i += 4
 			continue
 		} else if line[i] == "tri" {
@@ -92,7 +93,7 @@ func parseLine(line []string, opt *options) {
 			v2 := primitives.NewVec3(bx, by, bz)
 			v3 := primitives.NewVec3(cx, cy, cz)
 
-			opt.addObjects(objects.NewTriangle(v1, v2, v3, opt.mat))
+			opt.AddObjects(objects.NewTriangle(v1, v2, v3, opt.mat))
 			i += 9
 			continue
 		} else if line[i] == "obj" {
@@ -112,7 +113,7 @@ func parseLine(line []string, opt *options) {
 
 			location := primitives.NewVec3(px, py, pz)
 			color := textures.NewColor(r, g, b)
-			opt.addLights(materials.NewPointLight(location, color, int(falloff)))
+			opt.AddLights(materials.NewPointLight(location, color, int(falloff)))
 			if err != nil {
 				i += 6
 			} else {
@@ -130,7 +131,7 @@ func parseLine(line []string, opt *options) {
 
 			location := primitives.NewVec3(dx, dy, dz)
 			color := textures.NewColor(r, g, b)
-			opt.addLights(materials.NewDirectionalLight(location, color))
+			opt.AddLights(materials.NewDirectionalLight(location, color))
 			i += 6
 			continue
 		} else if line[i] == "lta" {
@@ -138,7 +139,7 @@ func parseLine(line []string, opt *options) {
 			g, _ := strconv.ParseFloat(line[i+2], 64)
 			b, _ := strconv.ParseFloat(line[i+3], 64)
 			color := textures.NewColor(r, g, b)
-			opt.setAmbientLight(materials.NewAmbientLight(color))
+			opt.SetAmbientLight(materials.NewAmbientLight(color))
 			i += 3
 			continue
 		} else if line[i] == "mat" {
@@ -164,7 +165,7 @@ func parseLine(line []string, opt *options) {
 			specular := textures.NewColor(ksr, ksg, ksb)
 			reflective := textures.NewColor(krr, krg, krb)
 
-			opt.setMat(materials.NewBlinnphong(ambient, diffuse, specular,
+			opt.SetMat(materials.NewBlinnphong(ambient, diffuse, specular,
 				reflective, phong, opt.ambientLight))
 			i += 13
 			continue
