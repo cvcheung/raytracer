@@ -4,7 +4,6 @@ import (
 	"math"
 	"raytracer/materials"
 	"raytracer/primitives"
-	// "fmt"
 )
 
 // Triangle ...

@@ -85,7 +85,6 @@ func TransformNormal(matrix *mat64.Dense, vec primitives.Vec3) primitives.Vec3 {
 	vector[0] = vec.X()
 	vector[1] = vec.Y()
 	vector[2] = vec.Z()
-	vector[3] = 0
 	vMatrix := mat64.NewDense(4, 1, vector)
 	out := mat64.NewDense(4, 1, nil)
 	out.Mul(matrix.T(), vMatrix)

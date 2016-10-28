@@ -2,6 +2,11 @@
 ## Introduction
 raytracer is a pure-go implementation of a raytracer that follows Peter Shirley's Raytracing Minibooks series with minor modifications to adapt to the specifications of [CS184](http://inst.eecs.berkeley.edu/~cs184/fa16/assignments/as2/assignment-02.pdf). The reason to use `go` is to take advantage of the built-in concurrency.
 
+## Dependencies
+raytracer utilizes the [gonum](github.com/gonum/matrix/) package to support homogenous transformations.
+
+`go get github.com/gonum/matrix/mat64`
+
 ## How to use
 The basic features supported from command line are as follows.
 
