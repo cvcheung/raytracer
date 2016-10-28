@@ -17,7 +17,7 @@ type Triangle struct {
 
 // NewTriangle ....
 func NewTriangle(v1, v2, v3 primitives.Vec3, mat materials.Material) *Triangle {
-	triangle := Triangle{v1: v1, v2: v2, v3:v3, mat: mat}
+	triangle := Triangle{v1: v1, v2: v2, v3: v3, mat: mat}
 	triangle.Normalize()
 	return &triangle
 }
@@ -29,9 +29,10 @@ func (t *Triangle) Hit(r *primitives.Ray, tMin, tMax float64, rec *materials.Hit
 	e2 := t.v3.Subtract(t.v1)
 	pv := r.Direction().Cross(e2)
 	det := e1.Dot(pv)
-	if det < tMin && det > -1 * tMin { // May want to change to solely consider front-hitting values when det > 0
+	if det < tMin && det > -1*tMin {
+		// May want to change to solely consider front-hitting values when det > 0
 		return false
-	}   
+	}
 	divDet := 1 / det
 	eyeVec := r.Origin().Subtract(t.v1)
 	u := eyeVec.Dot(pv) * divDet
@@ -40,7 +41,7 @@ func (t *Triangle) Hit(r *primitives.Ray, tMin, tMax float64, rec *materials.Hit
 	}
 	e2Vec := eyeVec.Cross(e1).Normalize()
 	v := r.Direction().Dot(e2Vec) * divDet
-	if v < 0 || u + v > 1 {
+	if v < 0 || u+v > 1 {
 		return false
 	}
 	// Record t
