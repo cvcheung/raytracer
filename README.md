@@ -54,9 +54,9 @@ Files are supported in the following format:
   * `xfz`
 
 ## Futurework
-* triangles
+* more unit tests
+* bounding boxes (there is a current implementation, but it is hard to see performance difference)
 * perlin noise
-* matrix transformations
 
 ## Sample Images
 ![shiny]
