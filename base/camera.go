@@ -32,6 +32,7 @@ func NewCameraFromCoordinates(LL, LR, UL, UR, eye primitives.Vec3, x, y float64)
 	u := vup.Cross(w).Normalize()
 	v := w.Cross(u)
 	return NewCamera(LL, horizontal, vertical, eye, u, v, w, 1, 0, 1)
+	// return NewCameraFOV(eye, lookat, vup, 60, x/y, 0, 1, 0, 1)
 }
 
 // NewCameraFOV returns a new camera object from a particular viewpoint with the
