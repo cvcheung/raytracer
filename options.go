@@ -11,14 +11,15 @@ import (
 )
 
 type options struct {
-	nx, ny, ns   int
-	film         *base.Film
-	camera       *base.Camera
-	ambientLight materials.Light
-	lights       []materials.Light
-	world        *objects.ObjectList
-	mat          materials.Material
-	transforms   []*mat64.Dense
+	nx, ny, ns, vfov, aperture int
+	film                       *base.Film
+	camera                     *base.Camera
+	ambientLight               materials.Light
+	lights                     []materials.Light
+	world                      *objects.ObjectList
+	mat                        materials.Material
+	transforms                 []*mat64.Dense
+	fovcam                     bool
 }
 
 // withOptions returns an options struct with the specified parameters

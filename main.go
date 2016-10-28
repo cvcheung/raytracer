@@ -17,8 +17,15 @@ func main() {
 	input := flag.String("f", "", "File to load.")
 	filename := flag.String("o", "output", "The filename.")
 	random := flag.Bool("r", false, "Generate a random scene.")
-	// vfov := flag.Int("vfv", 60, "Sets the camera fov.")
+	blur := flag.Bool("blur", false, "Turns on camera blur, effects change based on camera.")
+	vfov := flag.Int("vfov", 60, "Sets the camera fov, requires fovcam.")
+	aperture := flag.Int("apt", 0, "Sets the aperature of the camera, requires fovcam.")
+	fovcam := flag.Bool("fovcam", false, "Use a camera with a specified field of view.")
 	flag.Parse()
+
+	opts.vfov = *vfov
+	opts.aperture = *aperture
+	opts.fovcam = *fovcam
 
 	if *random {
 
@@ -58,7 +65,9 @@ func main() {
 	//
 	// cmdObjects = objects.NewObjectList(2, s1, s2)
 	// world := s1
-	// opts.camera.ToggleBlur()
+	if *blur {
+		opts.camera.ToggleBlur()
+	}
 	scene := base.NewScene(opts.camera, opts.film, opts.world, opts.lights, opts.ns)
 	scene.Render(*filename)
 }
