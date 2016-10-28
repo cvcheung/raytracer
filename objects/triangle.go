@@ -4,6 +4,7 @@ import (
 	"math"
 	"raytracer/materials"
 	"raytracer/primitives"
+	// "fmt"
 )
 
 // Triangle ...
@@ -16,7 +17,7 @@ type Triangle struct {
 
 // NewTriangle ....
 func NewTriangle(v1, v2, v3 primitives.Vec3, mat materials.Material) *Triangle {
-	triangle := Triangle{v1: v1, v2: v2, mat: mat}
+	triangle := Triangle{v1: v1, v2: v2, v3:v3, mat: mat}
 	triangle.Normalize()
 	return &triangle
 }
@@ -24,7 +25,33 @@ func NewTriangle(v1, v2, v3 primitives.Vec3, mat materials.Material) *Triangle {
 // Hit returns true if a ray intersects with the triangle and stores the result
 // in the passed record.
 func (t *Triangle) Hit(r *primitives.Ray, tMin, tMax float64, rec *materials.HitRecord) bool {
-	return false
+	e1 := t.v2.Subtract(t.v1)
+	e2 := t.v3.Subtract(t.v1)
+	pv := r.Direction().Cross(e2)
+	det := e1.Dot(pv)
+	if det < tMin && det > -1 * tMin { // May want to change to solely consider front-hitting values when det > 0
+		return false
+	}   
+	divDet := 1 / det
+	eyeVec := r.Origin().Subtract(t.v1)
+	u := eyeVec.Dot(pv) * divDet
+	if u < 0 || u > 1 {
+		return false
+	}
+	e2Vec := eyeVec.Cross(e1).Normalize()
+	v := r.Direction().Dot(e2Vec) * divDet
+	if v < 0 || u + v > 1 {
+		return false
+	}
+	// Record t
+	inter := e2.Dot(e2Vec) * divDet
+	if !(inter >= tMin && inter <= tMax) {
+		return false
+	}
+	p := r.PointAt(inter)
+	normal := e1.Cross(e2).Normalize()
+	rec.UpdateRecord(inter, u, v, p, normal, t.mat)
+	return true
 }
 
 // Normalize sets the normals of the triangle given its vertices.
