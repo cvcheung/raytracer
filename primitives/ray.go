@@ -1,5 +1,7 @@
 package primitives
 
+import "fmt"
+
 // Ray ...
 type Ray struct {
 	origin, direction Vec3
@@ -48,4 +50,8 @@ func (r *Ray) Time() float64 {
 // Returns a point as a Vec3.
 func (r *Ray) PointAt(f float64) Vec3 {
 	return r.origin.Add(r.direction.MultiplyScalar(f))
+}
+
+func (r *Ray) String() string {
+	return fmt.Sprintf("o: %s, d: %s", r.origin.String(), r.direction.String())
 }

@@ -10,8 +10,11 @@ import (
 	"raytracer/objects"
 	"raytracer/primitives"
 	"raytracer/textures"
+	"raytracer/transformations"
 	"strconv"
 	"strings"
+
+	"github.com/gonum/matrix/mat64"
 )
 
 // ParseFile ...
@@ -73,7 +76,14 @@ func parseLine(line []string, opt *Options) {
 			cy, _ := strconv.ParseFloat(line[i+2], 64)
 			cz, _ := strconv.ParseFloat(line[i+3], 64)
 			r, _ := strconv.ParseFloat(line[i+4], 64)
-			opt.AddObjects(objects.NewSphere(primitives.NewVec3(cx, cy, cz), r, opt.mat))
+			if len(opt.transforms) > 0 {
+				transform := transformations.Coalesce(opt.transforms)
+				opt.AddObjects(objects.NewSphereWithTransform(
+					primitives.NewVec3(cx, cy, cz), r, opt.mat, transform))
+			} else {
+				opt.AddObjects(objects.NewSphere(primitives.NewVec3(cx, cy, cz), r,
+					opt.mat))
+			}
 			i += 4
 			continue
 		} else if line[i] == "tri" {
@@ -97,6 +107,9 @@ func parseLine(line []string, opt *Options) {
 			i += 9
 			continue
 		} else if line[i] == "obj" {
+			i++
+			// TODO
+			// vertices, normals := ParseObj(line[i])
 			continue
 		} else if line[i] == "ltp" {
 			px, _ := strconv.ParseFloat(line[i+1], 64)
@@ -170,12 +183,31 @@ func parseLine(line []string, opt *Options) {
 			i += 13
 			continue
 		} else if line[i] == "xft" {
+			tx, _ := strconv.ParseFloat(line[i+1], 64)
+			ty, _ := strconv.ParseFloat(line[i+2], 64)
+			tz, _ := strconv.ParseFloat(line[i+3], 64)
+			opt.transforms = append(opt.transforms,
+				transformations.NewTranslationMatrix(tx, ty, tz))
+			i += 3
 			continue
 		} else if line[i] == "xfr" {
+			rx, _ := strconv.ParseFloat(line[i+1], 64)
+			ry, _ := strconv.ParseFloat(line[i+2], 64)
+			rz, _ := strconv.ParseFloat(line[i+3], 64)
+			opt.transforms = append(opt.transforms,
+				transformations.NewRotationMatrix(rx, ry, rz))
+			i += 3
 			continue
 		} else if line[i] == "xfs" {
+			sx, _ := strconv.ParseFloat(line[i+1], 64)
+			sy, _ := strconv.ParseFloat(line[i+2], 64)
+			sz, _ := strconv.ParseFloat(line[i+3], 64)
+			opt.transforms = append(opt.transforms,
+				transformations.NewScalingMatrix(sx, sy, sz))
+			i += 3
 			continue
-		} else if line[i] == "random" {
+		} else if line[i] == "xfz" {
+			opt.transforms = make([]*mat64.Dense, 0, 3)
 			continue
 		} else {
 			fmt.Println("Unexpected argument: ", i, line[i])

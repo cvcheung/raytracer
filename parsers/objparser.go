@@ -46,8 +46,8 @@ func parseElement(t []string) [][3]int32 {
 	return e
 }
 
-// Parse ...
-func Parse(filename string) ([]float32, []float32) {
+// ParseObj ...
+func ParseObj(filename string) ([]float32, []float32) {
 	fp, _ := os.Open(filename)
 	scanner := bufio.NewScanner(fp)
 
