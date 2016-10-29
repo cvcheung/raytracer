@@ -17,6 +17,8 @@ The basic features supported from command line are as follows.
     Sets the aperature of the camera, requires fovcam.
 -blur
     Turns on camera blur, effects change based on camera.
+-depth uint
+    Sets how many times a ray can bounce. (default 50)
 -dist float
     Sets the distance to focus. (default 1)
 -f string
@@ -27,7 +29,7 @@ The basic features supported from command line are as follows.
     The filename. (default "output")
 -r	Generate a random scene.
 -vfov float
-    Sets the camera fov, requires fovcam. (default 60)
+    Sets the camera fov, requires fovcam. (default 20)
 -x uint
     Specifies the width of the image. (default 500)
 -y uint
@@ -61,6 +63,7 @@ Files are supported in the following format:
 ## Sample Images
 ![shiny]
 ![blur]
+![triangle]
 ![arealight]
 ![wide]
 ![checkered]
@@ -68,6 +71,7 @@ Files are supported in the following format:
 
 [shiny]: sample/shiny.png
 [blur]: sample/blur.png
+[triangle]: sample/triangle.png
 [arealight]: sample/area_light.png
 [wide]: sample/wide_view.png
 [checkered]: sample/checkered.png
