@@ -110,7 +110,6 @@ func parseLine(line []string, opt *Options) {
 			i++
 			// vertices is a list of floats that can be read in by threes
 			vToks, nToks := ParseObj(line[i])
-
 			if len(vToks) == len(nToks) && len(vToks) > 0 {
 				for j := 0; j < len(vToks); j = j + 9 {
 					v1 := primitives.NewVec3(vToks[j], vToks[j + 1], vToks[j + 2])
@@ -121,7 +120,8 @@ func parseLine(line []string, opt *Options) {
 
 					v3 := primitives.NewVec3(vToks[j + 6], vToks[j + 7], vToks[j + 8])
 					n3 := primitives.NewVec3(nToks[j + 6], nToks[j + 7], nToks[j + 8])
-
+					// debug := []primitives.Vec3{v1, v2, v3, n1, n2, n3}
+					// fmt.Println(debug)
 					opt.AddObjects(objects.NewTriangleNormals(v1, v2, v3, n1, n2, n3, opt.mat))
 				}
 			} else {

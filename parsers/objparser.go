@@ -7,6 +7,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	// "fmt"
 )
 
 // Parse a vertex (normal) string, a list of whitespace-separated
@@ -33,6 +34,13 @@ func parseElement(t []string) [][3]int32 {
 			} else {
 				e[i][j] = -1
 			}
+
+		}
+		if len(f) < 3 {
+			addon := 3 - len(f)
+			for k := 0; k < addon; k++ {
+				e[i][k + 1] = -1
+			}
 		}
 	}
 
@@ -58,6 +66,9 @@ func ParseObj(filename string) ([]float64, []float64) {
 
 	for scanner.Scan() {
 		toks := strings.Fields(strings.TrimSpace(scanner.Text()))
+		if len(toks) <= 0 {
+			continue
+		}
 		switch toks[0] {
 		case "v":
 			vertices = append(vertices, parseVertex(toks[1:]))
