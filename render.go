@@ -52,7 +52,7 @@ func randomScene() objects.Object {
 		materials.NewLambertian(textures.NewColor(0.4, 0.2, 0.1))))
 	objList.Add(objects.NewSphere(primitives.NewVec3(4, 1, 0), 1,
 		materials.NewMetal(textures.NewColor(0.7, 0.6, 0.5), 0)))
-	// return objList
-	list := objList.List()
-	return objects.NewBVHNode(list, len(list), 0, 1)
+	return objList
+	// list := objList.List()
+	// return objects.NewBVHNode(list, len(list), 0, 1)
 }
