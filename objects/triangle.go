@@ -27,28 +27,40 @@ func (t *Triangle) Hit(r *primitives.Ray, tMin, tMax float64, rec *materials.Hit
 	e1 := t.v2.Subtract(t.v1)
 	e2 := t.v3.Subtract(t.v1)
 	pv := r.Direction().Cross(e2)
-	det := e1.Dot(pv)
-	if det < tMin {
+	det := pv.Dot(e1)
+
+	if det > -0.00001 && det < 0.00001 {
 		return false
 	}
+
 	divDet := 1 / det
 	eyeVec := r.Origin().Subtract(t.v1)
 	u := eyeVec.Dot(pv) * divDet
 	if u < 0 || u > 1 {
 		return false
 	}
-	e2Vec := eyeVec.Cross(e1).Normalize()
+	e2Vec := eyeVec.Cross(e1)
 	v := r.Direction().Dot(e2Vec) * divDet
 	if v < 0 || u+v > 1 {
 		return false
 	}
 	// Record t
 	inter := e2.Dot(e2Vec) * divDet
-	if !(inter >= tMin && inter <= tMax) {
+	if inter < tMin || inter > tMax {
 		return false
 	}
 	p := r.PointAt(inter)
-	normal := e1.Cross(e2).Normalize()
+	gamma := (t.v1.X() - t.v3.X()) + (t.v3.Y()-t.v1.Y())*(t.v2.X()-t.v1.X())
+	if gamma != 0 {
+		gamma = ((p.Y()-t.v1.Y())*(t.v2.X()-t.v1.X()) + (p.X() - t.v1.X())) / gamma
+	}
+	beta := (p.X() - t.v1.X()) + gamma*(t.v1.X()-t.v3.X())
+	if t.v2.X()-t.v1.X() != 0 {
+		beta = beta / (t.v2.X() - t.v1.X())
+	}
+	U := t.n1.Subtract(t.n2)
+	V := t.n1.Subtract(t.n3)
+	normal := t.n1.Add(U.MultiplyScalar(beta)).Add(V.MultiplyScalar(gamma)).Normalize()
 	rec.UpdateRecord(inter, u, v, p, normal, t.mat)
 	return true
 }

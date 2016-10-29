@@ -35,7 +35,7 @@ func WithOptions(parameters ...func(*Options)) *Options {
 		float64(500)/float64(500), aperature, distToFocus, 0, 1)
 	camera.ToggleBlur()
 	opts := &Options{nx: 500, ny: 500, ns: 8, film: base.NewFilm(500, 500),
-		camera: camera, ambientLight: materials.NewAmbientLight(textures.White),
+		camera: camera, ambientLight: materials.NewAmbientLight(textures.Black),
 		lights: make([]materials.Light, 0, 10), world: objects.NewEmptyObjectList(10),
 		mat: materials.NewBlinnphong(textures.White, textures.White, textures.White,
 			textures.White, 1.0, materials.NewAmbientLight(textures.White)),

@@ -36,16 +36,6 @@ func main() {
 		parsers.ParseFile(*input, opts)
 	}
 
-	// World space
-	// origin := primitives.NewVec3(0, 0, 10)
-	// lookat := primitives.NewVec3(0.0, 0.0, 0.0)
-	// vertical := primitives.NewVec3(0.0, 1.0, 0.0)
-	// distToFocus := 1.0
-	// aperature := 0.0
-	// camera := base.NewCameraFOV(origin, lookat, vertical, 20,
-	// 	float64(nx)/float64(ny), aperature, distToFocus, 0, 1)
-	// camera.ToggleBlur()
-
 	if *random {
 		origin := primitives.NewVec3(13, 2, 3)
 		lookat := primitives.NewVec3(0.0, 0.0, 0.0)

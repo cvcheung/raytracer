@@ -43,7 +43,14 @@ func (b Blinnphong) shade(rayIn *primitives.Ray, rec *HitRecord, depth int, ligh
 	if !shadow {
 		n := rec.normal
 		l := light.LVec(rec.Point())
-		color = color.Add(b.diffuse.Multiply(light.Intensity()).
+		intensity := light.Intensity()
+		distance := light.Direction(rec.Point()).Magnitude()
+		if light.Falloff() == 1 {
+			intensity = intensity.DivideScalar(distance)
+		} else if light.Falloff() == 2 {
+			intensity = intensity.DivideScalar(distance * distance)
+		}
+		color = color.Add(b.diffuse.Multiply(intensity).
 			MultiplyScalar(math.Max(0, n.Dot(l))))
 
 		v := rayIn.Origin().Subtract(rec.Point()).Normalize()
@@ -58,14 +65,9 @@ func (b Blinnphong) shade(rayIn *primitives.Ray, rec *HitRecord, depth int, ligh
 		rbv := r.Dot(v)
 		rbv = math.Pow(rbv, b.phong)
 
-		color = color.Add(b.specular.Multiply(light.Intensity()).
+		color = color.Add(b.specular.Multiply(intensity).
 			MultiplyScalar(rbv))
-		distance := light.Direction(rec.Point()).Magnitude()
-		if light.Falloff() == 1 {
-			color = color.DivideScalar(distance)
-		} else if light.Falloff() == 2 {
-			color = color.DivideScalar(distance * distance)
-		}
+
 	}
 	return color
 }
