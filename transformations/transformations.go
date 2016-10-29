@@ -23,7 +23,7 @@ func NewTranslationMatrix(x, y, z float64) *mat64.Dense {
 // NewRotationMatrix ...
 func NewRotationMatrix(x, y, z float64) *mat64.Dense {
 	matrix := make([]float64, 16)
-	theta := primitives.NewVec3(x, y, z).Magnitude() * math.Pi / 180.0
+	theta := primitives.NewVec3(x, y, z).Magnitude() * math.Pi / 180
 	direction := primitives.NewVec3(x, y, z).Normalize()
 
 	matrix[1] = -direction.Z()
@@ -39,8 +39,9 @@ func NewRotationMatrix(x, y, z float64) *mat64.Dense {
 
 	sine := mat64.NewDense(4, 4, nil)
 	cosine := mat64.NewDense(4, 4, nil)
+
 	sine.Scale(math.Sin(theta), crossMatrix)
-	cosine.Scale(math.Cos(theta), crossSquared)
+	cosine.Scale(1-math.Cos(theta), crossSquared)
 
 	iMatrix := make([]float64, 16)
 	iMatrix[0] = 1
@@ -49,7 +50,7 @@ func NewRotationMatrix(x, y, z float64) *mat64.Dense {
 	iMatrix[15] = 1
 	identityMatrix := mat64.NewDense(4, 4, iMatrix)
 	identityMatrix.Add(identityMatrix, sine)
-	identityMatrix.Sub(identityMatrix, cosine)
+	identityMatrix.Add(identityMatrix, cosine)
 
 	return identityMatrix
 }
