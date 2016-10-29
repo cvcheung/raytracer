@@ -102,8 +102,15 @@ func parseLine(line []string, opt *Options) {
 			v1 := primitives.NewVec3(ax, ay, az)
 			v2 := primitives.NewVec3(bx, by, bz)
 			v3 := primitives.NewVec3(cx, cy, cz)
-
+			if len(opt.transforms) > 0 {
+				transform := transformations.Coalesce(opt.transforms)
+				v1 = transformations.Transform(transform, v1)
+				v2 = transformations.Transform(transform, v2)
+				v3 = transformations.Transform(transform, v3)
+			}
 			opt.AddObjects(objects.NewTriangle(v1, v2, v3, opt.mat))
+
+
 			i += 9
 			continue
 		} else if line[i] == "obj" {
@@ -120,8 +127,16 @@ func parseLine(line []string, opt *Options) {
 
 					v3 := primitives.NewVec3(vToks[j + 6], vToks[j + 7], vToks[j + 8])
 					n3 := primitives.NewVec3(nToks[j + 6], nToks[j + 7], nToks[j + 8])
-					// debug := []primitives.Vec3{v1, v2, v3, n1, n2, n3}
-					// fmt.Println(debug)
+					if len(opt.transforms) > 0 {
+						transform := transformations.Coalesce(opt.transforms)
+						v1 = transformations.Transform(transform, v1)
+						v2 = transformations.Transform(transform, v2)
+						v3 = transformations.Transform(transform, v3)
+						n1 = transformations.TransformNormal(transform, n1)
+						n2 = transformations.TransformNormal(transform, n2)
+						n3 = transformations.TransformNormal(transform, n3)
+					}
+
 					opt.AddObjects(objects.NewTriangleNormals(v1, v2, v3, n1, n2, n3, opt.mat))
 				}
 			} else {
@@ -129,6 +144,12 @@ func parseLine(line []string, opt *Options) {
 					v1 := primitives.NewVec3(vToks[j], vToks[j + 1], vToks[j + 2])
 					v2 := primitives.NewVec3(vToks[j + 3], vToks[j + 4], vToks[j + 5])
 					v3 := primitives.NewVec3(vToks[j + 6], vToks[j + 7], vToks[j + 8])
+					if len(opt.transforms) > 0 {
+						transform := transformations.Coalesce(opt.transforms)
+						v1 = transformations.Transform(transform, v1)
+						v2 = transformations.Transform(transform, v2)
+						v3 = transformations.Transform(transform, v3)
+					}
 					opt.AddObjects(objects.NewTriangle(v1, v2, v3, opt.mat))
 				}
 			}
