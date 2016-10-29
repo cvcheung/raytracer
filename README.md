@@ -11,29 +11,31 @@ raytracer utilizes the [gonum](github.com/gonum/matrix/) package to support homo
 The basic features supported from command line are as follows.
 
 ```Shell
--aa uint
-    Sets the antialising amount. (default 8)
--apt float
-    Sets the aperature of the camera, requires fovcam.
--blur
-    Turns on camera blur, effects change based on camera.
--depth uint
-    Sets how many times a ray can bounce. (default 50)
--dist float
-    Sets the distance to focus. (default 1)
--f string
-    File to load.
--fovcam
-    Use a camera with a specified field of view.
--o string
-    The filename. (default "output")
--r	Generate a random scene.
--vfov float
-    Sets the camera fov, requires fovcam. (default 20)
--x uint
-    Specifies the width of the image. (default 500)
--y uint
-    Specifies the height of the image. (default 500)
+Usage of ./raytracer:
+
+  -aa uint
+    	Sets the antialising amount. (default 8)
+  -apt float
+    	Sets the aperature of the camera, requires fovcam.
+  -blur
+    	Turns on camera blur, effects change based on camera.
+  -depth uint
+    	Sets how many times a ray can bounce. (default 50)
+  -dist float
+    	Sets the distance to focus. (default 1)
+  -f string
+    	File to load.
+  -fovcam
+    	Use a camera with a specified field of view.
+  -o string
+    	The filename. (default "output")
+  -r	Generate a random scene.
+  -vfov float
+    	Sets the camera fov, requires fovcam. (default 20)
+  -x uint
+    	Specifies the width of the image. (default 500)
+  -y uint
+    	Specifies the height of the image. (default 500)
 ```
 
 Files are supported in the following format:
