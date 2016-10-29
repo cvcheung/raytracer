@@ -24,6 +24,7 @@ func main() {
 	distFocus := flag.Float64("dist", 1, "Sets the distance to focus.")
 	aperture := flag.Float64("apt", 0, "Sets the aperature of the camera, requires fovcam.")
 	fovcam := flag.Bool("fovcam", false, "Use a camera with a specified field of view.")
+	depth := flag.Uint("depth", 50, "Sets how many times a ray can bounce.")
 	flag.Parse()
 
 	opts.SetVFOV(*vfov)
@@ -49,7 +50,7 @@ func main() {
 		if *blur {
 			camera.ToggleBlur()
 		}
-		scene := base.NewScene(camera, film, world, nil, int(*aa))
+		scene := base.NewScene(camera, film, world, nil, int(*aa), int(*depth))
 		scene.Render(*filename, true)
 		return
 	}
@@ -59,6 +60,6 @@ func main() {
 	}
 
 	scene := base.NewScene(opts.GetCamera(), opts.GetFilm(), opts.GetWorld(),
-		opts.GetLights(), opts.GetAntialiasing())
+		opts.GetLights(), opts.GetAntialiasing(), int(*depth))
 	scene.Render(*filename, *random)
 }

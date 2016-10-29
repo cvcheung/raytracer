@@ -13,16 +13,16 @@ import (
 
 // Scene ...
 type Scene struct {
-	camera *Camera
-	film   *Film
-	world  objects.Object
-	lights []materials.Light
-	ns     int
+	camera    *Camera
+	film      *Film
+	world     objects.Object
+	lights    []materials.Light
+	ns, depth int
 }
 
 // NewScene ...
-func NewScene(camera *Camera, film *Film, world objects.Object, lights []materials.Light, ns int) *Scene {
-	return &Scene{camera, film, world, lights, ns}
+func NewScene(camera *Camera, film *Film, world objects.Object, lights []materials.Light, ns, depth int) *Scene {
+	return &Scene{camera, film, world, lights, ns, depth}
 }
 
 // TODO add func options to have a variety of backgrounds.
@@ -31,7 +31,7 @@ func (s *Scene) shade(r *primitives.Ray, obj objects.Object, depth int) textures
 	if obj.Hit(r, 0.001, math.MaxFloat64, &rec) {
 		m := rec.Material()
 		emit := m.Emitted(rec.U(), rec.V(), rec.Point())
-		if depth < 50 {
+		if depth < s.depth {
 			var attenuation textures.Color
 			finalColor := textures.Black
 			if depth == 0 {
@@ -116,7 +116,7 @@ func (s *Scene) shadeRandom(r *primitives.Ray, obj objects.Object, depth int) te
 	if obj.Hit(r, 0.001, math.MaxFloat64, &rec) {
 		m := rec.Material()
 		emit := m.Emitted(rec.U(), rec.V(), rec.Point())
-		if depth < 50 {
+		if depth < s.depth {
 			var attenuation textures.Color
 			if bounce, scattered := m.Scatter(r, &attenuation, &rec, depth, nil, false); bounce {
 				return emit.Add(attenuation.Multiply(s.shadeRandom(scattered, obj, depth+1)))
