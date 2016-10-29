@@ -21,6 +21,11 @@ func NewTriangle(v1, v2, v3 primitives.Vec3, mat materials.Material) *Triangle {
 	return &triangle
 }
 
+func NewTriangleNormals(v1, v2, v3, n1, n2, n3 primitives.Vec3, mat materials.Material) *Triangle {
+	triangle := Triangle{v1: v1, v2:v2, v3:v3, n1:n1, n2:n2, n3:n3, mat:mat}
+	return &triangle
+}
+
 // Hit returns true if a ray intersects with the triangle and stores the result
 // in the passed record.
 func (t *Triangle) Hit(r *primitives.Ray, tMin, tMax float64, rec *materials.HitRecord) bool {

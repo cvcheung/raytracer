@@ -103,19 +103,37 @@ func parseLine(line []string, opt *Options) {
 			v2 := primitives.NewVec3(bx, by, bz)
 			v3 := primitives.NewVec3(cx, cy, cz)
 
-			if len(opt.transforms) > 0 {
-				transform := transformations.Coalesce(opt.transforms)
-				v1 = transformations.Transform(transform, v1)
-				v2 = transformations.Transform(transform, v2)
-				v3 = transformations.Transform(transform, v3)
-			}
 			opt.AddObjects(objects.NewTriangle(v1, v2, v3, opt.mat))
 			i += 9
 			continue
 		} else if line[i] == "obj" {
 			i++
-			// TODO
-			// vertices, normals := ParseObj(line[i])
+			// vertices is a list of floats that can be read in by threes
+			vToks, nToks := ParseObj(line[i])
+
+			if len(vToks) == len(nToks) && len(vToks) > 0 {
+				for j := 0; j < len(vToks); j = j + 9 {
+					v1 := primitives.NewVec3(vToks[j], vToks[j + 1], vToks[j + 2])
+					n1 := primitives.NewVec3(nToks[j], nToks[j + 1], nToks[j + 2])
+
+					v2 := primitives.NewVec3(vToks[j + 3], vToks[j + 4], vToks[j + 5])
+					n2 := primitives.NewVec3(nToks[j + 3], nToks[j + 4], nToks[j + 5])
+
+					v3 := primitives.NewVec3(vToks[j + 6], vToks[j + 7], vToks[j + 8])
+					n3 := primitives.NewVec3(nToks[j + 6], nToks[j + 7], nToks[j + 8])
+
+					opt.AddObjects(objects.NewTriangleNormals(v1, v2, v3, n1, n2, n3, opt.mat))
+				}
+			} else {
+				for j := 0; j < len(vToks); j = j + 9 {
+					v1 := primitives.NewVec3(vToks[j], vToks[j + 1], vToks[j + 2])
+					v2 := primitives.NewVec3(vToks[j + 3], vToks[j + 4], vToks[j + 5])
+					v3 := primitives.NewVec3(vToks[j + 6], vToks[j + 7], vToks[j + 8])
+					opt.AddObjects(objects.NewTriangle(v1, v2, v3, opt.mat))
+				}
+			}
+
+	
 			continue
 		} else if line[i] == "ltp" {
 			px, _ := strconv.ParseFloat(line[i+1], 64)
