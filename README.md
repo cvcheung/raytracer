@@ -14,7 +14,7 @@ The basic features supported from command line are as follows.
 Usage of ./raytracer:
 
   -aa uint
-    	Sets the antialising amount. (default 8)
+    	Sets the antialiasing amount. (default 8)
   -apt float
     	Sets the aperature of the camera, requires fovcam.
   -blur

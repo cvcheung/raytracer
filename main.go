@@ -15,7 +15,7 @@ func main() {
 
 	x := flag.Uint("x", 500, "Specifies the width of the image.")
 	y := flag.Uint("y", 500, "Specifies the height of the image.")
-	aa := flag.Uint("aa", 8, "Sets the antialising amount.")
+	aa := flag.Uint("aa", 8, "Sets the antialiasing amount.")
 	input := flag.String("f", "", "File to load.")
 	filename := flag.String("o", "output", "The filename.")
 	random := flag.Bool("r", false, "Generate a random scene.")
